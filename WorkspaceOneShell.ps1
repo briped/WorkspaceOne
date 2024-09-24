@@ -1,20 +1,53 @@
-﻿function New-Config {
+﻿function Login {
     [CmdletBinding()]
     param(
-        # Path to CliXML config.
+        [Parameter(Mandatory = $true)]
+        [Alias('ApiUrl')]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Url
+        ,
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('ApiKey')]
+        [pscredential]
+        $Key
+        ,
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [pscredential]
+        $Credential
+    )
+    $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Config.ApiCredential.Password)
+    $ApiKey = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+    $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Credential.Password)
+    $Username = $Credential.UserName
+    $Password = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+    $Secret = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("$($Username):$($Password)"))
+    Remove-Variable -Force -Name Password -ErrorAction SilentlyContinue
+    $Script:Headers = @{
+        'Accept'         = 'application/json'
+        'Authorization'  = "Basic $($Secret)"
+        'aw-tenant-code' = $ApiKey
+    }
+    $Script:Headers
+}
+function New-Config {
+    [CmdletBinding()]
+    param(
         [Parameter()]
         [Alias('PSPath')]
         [ValidateNotNullOrEmpty()]
         [System.IO.FileInfo]
         $Path
         ,
-        # URL to Workspace ONE API.
-        [Parameter(HelpMessage = 'URL to Workspace ONE API')]
+        [Parameter()]
         [Alias('ApiUrl')]
         [ValidateNotNullOrEmpty()]
         [string]
         $Url
     )
+    #TODO: Add Credential and API key parameters
     if ($IsLinux) {
         $EnvUser = 'USER'
         $EnvName = 'NAME'
@@ -30,7 +63,7 @@
     $HostHome = [System.Environment]::GetEnvironmentVariable($EnvHome)
     $UserHost = "$($HostUser)@$($HostName)"
     if (!$Url -or ($Url -as [uri]).Scheme -notmatch 'https?') {
-        $Url = Read-Host -Prompt 'Workspace ONE APO URL'
+        $Url = Read-Host -Prompt 'Workspace ONE API URL'
     }
     $Config = New-Object -TypeName PSCustomObject -Property @{
         Name = $UserHost
@@ -53,10 +86,7 @@
 function Get-Config {
     [CmdletBinding()]
     param(
-        # Path to CliXML config.
-        [Parameter(Position = 0
-                  ,ValueFromPipeline = $true
-                  ,ValueFromPipelineByPropertyName = $true)]
+        [Parameter()]
         [Alias('PSPath')]
         [ValidateNotNullOrEmpty()]
         [System.IO.FileInfo]
@@ -90,7 +120,6 @@ function Get-Config {
 function Get-AppStoreDetails {
     [CmdletBinding()]
     param(
-        # App URL
         [Parameter(Mandatory = $true)]
         [string]
         $Uri
@@ -110,33 +139,30 @@ function Get-AppStoreDetails {
 function Get-Notification {
     [CmdletBinding()]
     param(
-        # Starting index if multiple pages.
         [Parameter()]
         [Alias('Start', 'PageStart')]
         [int]
         $Page
         ,
-        # Results per page.
         [Parameter()]
         [Alias('Limit')]
         [int]
         $PageSize
         ,
-        # Active/dismissed notifications.
         [Parameter()]
         [ValidateSet('Active' ,'Dismissed')]
         [string]
         $Status
     )
     $Uri = "$($Config.ApiUrl)/system/notifications"
-	$Data = @{}
+    $Data = @{}
     if ($Page -and $Page -gt 0) { $Data.startIndex = $Page }
     if ($PageSize -and $PageSize -gt 0) { $Data.pageSize = $PageSize }
     if ($Status -and $Status -eq 'Dismissed') { $Data.active = $false }
-	$Query = @()
-	foreach ($k in $Data.Keys) {
-		$Query += "$($k)=$($Data[$k])"
-	}
+    $Query = @()
+    foreach ($k in $Data.Keys) {
+        $Query += "$($k)=$($Data[$k])"
+    }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
     $Splattributes = @{
         Method = 'GET'
@@ -150,21 +176,19 @@ function Get-Notification {
 function Clear-Notification {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
-        # Notification ID.
         [Parameter(Mandatory = $true)]
         [int]
         $Id
-		,
-		# Force action.
-		[Parameter()]
-		[switch]
-		$Force
+        ,
+        [Parameter()]
+        [switch]
+        $Force
     )
     if ($Force -and !$Confirm) {
         $ConfirmPreference = 'None'
     }
     # TODO: Update the ShouldProcess text
-	if ($PSCmdlet.ShouldProcess("Dismiss Notification ID '$($Id)'.")) {
+    if ($PSCmdlet.ShouldProcess("Dismiss Notification ID '$($Id)'.")) {
         $Splattributes = @{
             Method = 'POST'
             ContentType = 'application/json'
@@ -179,61 +203,49 @@ function Find-PurchasedApp {
     [CmdletBinding()]
     param(
         [Parameter()]
-        [Alias('ApplicationName'
-              ,'AppName')]
+        [Alias('AppName', 'ApplicationName')]
         [string]
         $Name
         ,
-        # Flag to indicate whether the app is assigned or not, for example - true.
         [Parameter()]
         [string]
         $Assigned
         ,
-        # BundleId/PackageId, for example - xyz.Angrybirds.com.
         [Parameter()]
         [string]
         $BundleId
         ,
-        # LocationGroup Identifier, for example - 777.
         [Parameter()]
         [int]
         $LocationGroupId
         ,
-        # OrganizationGroup Identifier.
         [Parameter()]
         [string]
         $OrganizationGroupUuid
         ,
-        # Device Model, for example - iPhone.
         [Parameter()]
-        [ValidateSet('iPhone'
-                    ,'iPad')]
+        [ValidateSet('iPhone', 'iPad')]
         [string]
         $Model
         ,
-        # Application Status, for example - Active.
         [Parameter()]
         [string]
         $Status
         ,
-        # The Application Platform, for example - Apple.
         [Parameter()]
         [string]
         $Platform
         ,
-        # Specific page number to get. 0 based index.
         [Parameter()]
-        [Alias('Start', 'StartPage')]
+        [Alias('Start', 'PageStart')]
         [int]
         $Page
         ,
-        # Maximumm records per page. Default 500.
         [Parameter()]
         [Alias('Limit')]
         [int]
         $PageSize
         ,
-        # Orderby column name, for example - applicationname.
         [Parameter()]
         [string]
         $OrderBy
@@ -251,10 +263,10 @@ function Find-PurchasedApp {
     if ($Page -and $Page -gt 0) { $Data.startIndex = $Page }
     if ($PageSize -and $PageSize -gt 0) { $Data.pageSize = $PageSize }
     if ($OrderBy) { $Data.orderBy = $OrderBy }
-	$Query = @()
-	foreach ($k in $Data.Keys) {
-		$Query += "$($k)=$($Data[$k])"
-	}
+    $Query = @()
+    foreach ($k in $Data.Keys) {
+        $Query += "$($k)=$($Data[$k])"
+    }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
     $Splattributes = @{
         Method = 'GET'
@@ -269,51 +281,40 @@ function Find-PurchasedApp {
 function Get-DeviceWithPurchasedApp {
     [CmdletBinding()]
     param(
-        # Application ID.
-        [Parameter(Mandatory = $true
-                  ,Position = 0
-                  ,ValueFromPipeline = $true
-                  ,ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true)]
         [Alias('AppId')]
         [int]
         $ApplicationId
         ,
-        # Status - installed/assigned.
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Installed'
-                    ,'Assigned')]
+        [ValidateSet('Installed', 'Assigned')]
         [string]
         $Status
         ,
-        # The LocationGroup Identifier.
         [Parameter()]
         [int]
         $LocationGroupId
         ,
-        # Starting index if multiple pages.
         [Parameter()]
-        [Alias('PageStart')]
+        [Alias('Start', 'PageStart')]
         [int]
         $Page
         ,
-        # Results per page.
         [Parameter()]
-        [Alias('Pages'
-              ,'Size'
-              ,'Count')]
+        [Alias('Limit')]
         [int]
         $PageSize
     )
     $Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationId)/devices"
-	$Data = @{}
+    $Data = @{}
     if ($Status) { $Data.status = $Status.ToLower() }
     if ($LocationGroupId -and $LocationGroupId -gt 0) { $Data.locationGroupId = $LocationGroupId }
     if ($Page -and $Page -gt 0) { $Data.page = $Page }
     if ($PageSize -and $PageSize -gt 0) { $Data.pageSize = $PageSize }
-	$Query = @()
-	foreach ($k in $Data.Keys) {
-		$Query += "$($k)=$($Data[$k])"
-	}
+    $Query = @()
+    foreach ($k in $Data.Keys) {
+        $Query += "$($k)=$($Data[$k])"
+    }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
     $Splattributes = @{
         Method = 'GET'
@@ -329,259 +330,233 @@ function Install-PurchasedAppV1 {
     [CmdletBinding(DefaultParameterSetName = 'ID'
                   ,SupportsShouldProcess = $true)]
     param(
-        # Device ID.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'ID')]
         [int]
         $DeviceId
         ,
-        # Device UUID.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'UUID')]
         [int]
         $DeviceUuid
         ,
-        # Device UDID.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'UDID')]
         [int]
         $DeviceUdid
         ,
-        # Device Serial Number.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'SerialNumber')]
         [int]
         $SerialNumber
         ,
-        # Application ID.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'ID')]
         [Alias('AppId')]
         [int]
-        $ApplicationID
+        $ApplicationId
         ,
-        # Application UUID.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'UUID')]
         [Alias('AppUuid')]
         [int]
         $ApplicationUuid
-		,
-		# Force action.
-		[Parameter()]
-		[switch]
-		$Force
+        ,
+        [Parameter()]
+        [switch]
+        $Force
     )
     if ($Force -and !$Confirm) {
         $ConfirmPreference = 'None'
     }
     $Data = @{
-		DeviceId = $DeviceID
-	}
+        DeviceId = $DeviceID
+    }
     # TODO: Update the ShouldProcess text
-	if ($PSCmdlet.ShouldProcess("Install Application ID '$($ApplicationID)' on Device ID '$($DeviceID)'.")) {
-		$Splattributes = @{
-			Method = 'POST'
-			ContentType = 'application/json'
-			Header = $Headers
-            Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationID)/install"
-			Body = $Data | ConvertTo-Json -Compress
-		}
+    if ($PSCmdlet.ShouldProcess("Install Application ID '$($ApplicationId)' on Device ID '$($DeviceId)'.")) {
+        $Splattributes = @{
+            Method = 'POST'
+            ContentType = 'application/json'
+            Header = $Headers
+            Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationId)/install"
+            Body = $Data | ConvertTo-Json -Compress
+        }
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-		Invoke-RestMethod @Splattributes
-	}
+        Invoke-RestMethod @Splattributes
+    }
 }
 function Install-PurchasedAppV2 {
     [CmdletBinding(DefaultParameterSetName = 'UUID'
                   ,SupportsShouldProcess = $true)]
     param(
-        # Device UUID.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'UUID')]
         [int]
-        $DeviceUUID
+        $DeviceUuid
         ,
-        # Device UDID.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'UDID')]
         [int]
-        $DeviceUDID
+        $DeviceUdid
         ,
-        # Device Serial Number.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'SerialNumber')]
         [int]
         $SerialNumber
         ,
-        # Application UUID.
         [Parameter(Mandatory = $true)]
         [Alias('AppUUID')]
         [int]
-        $ApplicationUUID
-		,
-		# Force action.
-		[Parameter()]
-		[switch]
-		$Force
+        $ApplicationUuid
+        ,
+        [Parameter()]
+        [switch]
+        $Force
     )
     if ($Force -and !$Confirm) {
         $ConfirmPreference = 'None'
     }
     $Data = @{
-		DeviceId = $DeviceID
-	}
+        DeviceId = $DeviceId
+    }
     # TODO: Update the ShouldProcess text
-	if ($PSCmdlet.ShouldProcess("Install Application UUID '$($ApplicationUUID)' on Device UUID '$($DeviceUUID)'.")) {
-		$Splattributes = @{
-			Method = 'POST'
-			ContentType = 'application/json'
-			Header = $Headers
-            Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationUUID)/install"
-			Body = $Data | ConvertTo-Json -Compress
-		}
+    if ($PSCmdlet.ShouldProcess("Install Application UUID '$($ApplicationUuid)' on Device UUID '$($DeviceUuid)'.")) {
+        $Splattributes = @{
+            Method = 'POST'
+            ContentType = 'application/json'
+            Header = $Headers
+            Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationUuid)/install"
+            Body = $Data | ConvertTo-Json -Compress
+        }
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-		Invoke-RestMethod @Splattributes
-	}
+        Invoke-RestMethod @Splattributes
+    }
 }
 function Remove-PurchasedAppV1 {
     [CmdletBinding(DefaultParameterSetName = 'ID'
                   ,SupportsShouldProcess = $true)]
     param(
-        # Device ID.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'ID')]
         [int]
-        $DeviceID
+        $DeviceId
         ,
-        # Device UUID.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'UUID')]
         [int]
-        $DeviceUUID
+        $DeviceUuid
         ,
-        # Device UDID.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'UDID')]
         [int]
-        $DeviceUDID
+        $DeviceUdid
         ,
-        # Device Serial Number.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'SerialNumber')]
         [int]
         $SerialNumber
         ,
-        # Application ID.
         [Parameter(Mandatory = $true)]
         [Alias('AppID')]
         [int]
-        $ApplicationID
-		,
-		# Force action.
-		[Parameter()]
-		[switch]
-		$Force
+        $ApplicationId
+        ,
+        [Parameter()]
+        [switch]
+        $Force
     )
     if ($Force -and !$Confirm) {
         $ConfirmPreference = 'None'
     }
     $Data = @{
-		DeviceId = $DeviceID
-	}
+        DeviceId = $DeviceId
+    }
     # TODO: Update the ShouldProcess text
-	if ($PSCmdlet.ShouldProcess("Install Application ID '$($ApplicationID)' on Device ID '$($DeviceID)'.")) {
-		$Splattributes = @{
-			Method = 'POST'
-			ContentType = 'application/json'
-			Header = $Headers
-            Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationID)/uninstall"
-			Body = $Data | ConvertTo-Json -Compress
-		}
+    if ($PSCmdlet.ShouldProcess("Install Application ID '$($ApplicationId)' on Device ID '$($DeviceId)'.")) {
+        $Splattributes = @{
+            Method = 'POST'
+            ContentType = 'application/json'
+            Header = $Headers
+            Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationId)/uninstall"
+            Body = $Data | ConvertTo-Json -Compress
+        }
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-		Invoke-RestMethod @Splattributes
-	}
+        Invoke-RestMethod @Splattributes
+    }
 }
 function Remove-PurchasedAppV2 {
     [CmdletBinding(DefaultParameterSetName = 'UUID'
                   ,SupportsShouldProcess = $true)]
     param(
-        # Device UUID.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'UUID')]
         [int]
-        $DeviceUUID
+        $DeviceUuid
         ,
-        # Device UDID.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'UDID')]
         [int]
-        $DeviceUDID
+        $DeviceUdid
         ,
-        # Device Serial Number.
         [Parameter(Mandatory = $true
                   ,ParameterSetName = 'SerialNumber')]
         [int]
         $SerialNumber
         ,
-        # Application UUID.
         [Parameter(Mandatory = $true)]
-        [Alias('AppUUID')]
+        [Alias('AppUuid')]
         [int]
-        $ApplicationUUID
-		,
-		# Force action.
-		[Parameter()]
-		[switch]
-		$Force
+        $ApplicationUuid
+        ,
+        [Parameter()]
+        [switch]
+        $Force
     )
     if ($Force -and !$Confirm) {
         $ConfirmPreference = 'None'
     }
     $Data = @{
-		DeviceId = $DeviceID
-	}
+        DeviceId = $DeviceId
+    }
     # TODO: Update the ShouldProcess text
-	if ($PSCmdlet.ShouldProcess("Install Application UUID '$($ApplicationUUID)' on Device UUID '$($DeviceUUID)'.")) {
-		$Splattributes = @{
-			Method = 'POST'
-			ContentType = 'application/json'
-			Header = $Headers
-            Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationUUID)/uninstall"
-			Body = $Data | ConvertTo-Json -Compress
-		}
+    if ($PSCmdlet.ShouldProcess("Install Application UUID '$($ApplicationUuid)' on Device UUID '$($DeviceUuid)'.")) {
+        $Splattributes = @{
+            Method = 'POST'
+            ContentType = 'application/json'
+            Header = $Headers
+            Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationUuid)/uninstall"
+            Body = $Data | ConvertTo-Json -Compress
+        }
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-		Invoke-RestMethod @Splattributes
-	}
+        Invoke-RestMethod @Splattributes
+    }
 }
 function Update-PurchasedAppV1 {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
-        # Application ID.
         [Parameter(Mandatory = $true)]
-        [Alias('Id'
-              ,'AppId')]
+        [Alias('AppId', 'ApplicationId')]
         [int]
-        $ApplicationId
-		,
-		# Force action.
-		[Parameter()]
-		[switch]
-		$Force
+        $Id
+        ,
+        [Parameter()]
+        [switch]
+        $Force
     )
     if ($Force -and !$Confirm) {
         $ConfirmPreference = 'None'
     }
     # TODO: Update the ShouldProcess text
-	if ($PSCmdlet.ShouldProcess("Update Application ID '$($ApplicationID)' on devices.")) {
-		$Splattributes = @{
-			Method = 'POST'
-			ContentType = 'application/json'
-			Header = $Headers
-            Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationID)"
-		}
+    if ($PSCmdlet.ShouldProcess("Update Application ID '$($ApplicationId)' on devices.")) {
+        $Splattributes = @{
+            Method = 'POST'
+            ContentType = 'application/json'
+            Header = $Headers
+            Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationId)"
+        }
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-		Invoke-RestMethod @Splattributes
-	}
+        Invoke-RestMethod @Splattributes
+    }
 }
 function Find-DeviceV1 {
     [CmdletBinding()]
@@ -590,10 +565,8 @@ function Find-DeviceV1 {
         [string]
         $User
         ,
-        # Device Model.
         [Parameter()]
-        [ValidateSet('iPhone'
-                    ,'iPad')]
+        [ValidateSet('iPhone', 'iPad')]
         [string]
         $Model
         ,
@@ -611,10 +584,9 @@ function Find-DeviceV1 {
         [bool]
         $Compliant
         ,
-        # OrganizationGroup Identifier? LocationGroupID?
         [Parameter()]
         [string]
-        $OrganizationGroupUuid # lgid
+        $OrganizationGroupUuid # lgid #TODO: Follow-up check if LocationGroupId rather than OrganisationGroupUuid.
         ,
         [Parameter()]
         [datetime]
@@ -625,29 +597,28 @@ function Find-DeviceV1 {
         $SeenSince
         ,
         [Parameter()]
-        [Alias('PageStart')]
+        [Alias('Start', 'PageStart')]
         [int]
         $Page
         ,
-        # Maximumm records per page. Default 500.
         [Parameter()]
+        [Alias('Limit')]
         [int]
         $PageSize
         ,
         [Parameter()]
-        [ValidateSet('lastseen', 'ownership', 'platform', 'deviceid')]
+        [ValidateSet('LastSeen', 'Ownership', 'Platform', 'DeviceId')]
         [string]
         $OrderBy
         ,
         [Parameter()]
         [Alias('Sort')]
-        [ValidateSet('ASC'
-                    ,'DESC')]
+        [ValidateSet('ASC', 'DESC')]
         [string]
         $SortOrder
     )
     $Uri = "$($Config.ApiUrl)/mdm/devices/search"
-	$Data = @{}
+    $Data = @{}
     if ($User) { $Data.user = $User }
     if ($Model) { $Data.model = $Model }
     if ($Platform) { $Data.platform = $Platform }
@@ -657,10 +628,10 @@ function Find-DeviceV1 {
     if ($PageSize -and $PageSize -gt 0) { $Data.pagesize = $PageSize }
     if ($OrderBy) { $Data.orderby = $OrderBy }
     if ($SortOrder -and $SortOrder -ne 'ASC') { $Data.sortorder = $SortOrder }
-	$Query = @()
-	foreach ($k in $Data.Keys) {
-		$Query += "$($k)=$($Data[$k])"
-	}
+    $Query = @()
+    foreach ($k in $Data.Keys) {
+        $Query += "$($k)=$($Data[$k])"
+    }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
     $Splattributes = @{
         Method = 'GET'
@@ -677,7 +648,6 @@ function Find-DeviceV2 {
         [string]
         $User
         ,
-        # Device Model.
         [Parameter()]
         [ValidateSet('iPhone'
                     ,'iPad')]
@@ -698,10 +668,9 @@ function Find-DeviceV2 {
         [string]
         $Compliance
         ,
-        # OrganizationGroup Identifier? LocationGroupID?
         [Parameter()]
         [string]
-        $OrganizationGroupUuid # lgid
+        $OrganizationGroupUuid # lgid #TODO: Follow-up check if LocationGroupId rather than OrganisationGroupUuid.
         ,
         [Parameter()]
         [datetime]
@@ -712,12 +681,12 @@ function Find-DeviceV2 {
         $SeenSince
         ,
         [Parameter()]
-        [Alias('StartPage')]
+        [Alias('Start', 'StartPage')]
         [int]
         $Page
         ,
-        # Maximumm records per page. Default 500.
         [Parameter()]
+        [Alias('Limit')]
         [int]
         $PageSize
         ,
@@ -727,13 +696,12 @@ function Find-DeviceV2 {
         ,
         [Parameter()]
         [Alias('Sort')]
-        [ValidateSet('ASC'
-                    ,'DESC')]
+        [ValidateSet('ASC', 'DESC')]
         [string]
         $SortOrder
     )
     $Uri = "$($Config.ApiUrl)/mdm/devices/search"
-	$Data = @{}
+    $Data = @{}
     if ($User) { $Data.user = $User }
     if ($Model) { $Data.model = $Model }
     if ($Platform) { $Data.platform = $Platform }
@@ -743,10 +711,10 @@ function Find-DeviceV2 {
     if ($PageSize -and $PageSize -gt 0) { $Data.pagesize = $PageSize }
     if ($OrderBy) { $Data.orderby = $OrderBy }
     if ($SortOrder -and $SortOrder -ne 'ASC') { $Data.sortorder = $SortOrder }
-	$Query = @()
-	foreach ($k in $Data.Keys) {
-		$Query += "$($k)=$($Data[$k])"
-	}
+    $Query = @()
+    foreach ($k in $Data.Keys) {
+        $Query += "$($k)=$($Data[$k])"
+    }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
     $Splattributes = @{
         Method = 'GET'
@@ -771,29 +739,26 @@ function Find-DeviceV3 {
         [string]
         $Compliance
         ,
-        # OrganizationGroup Identifier.
         [Parameter()]
         [string]
         $OrganizationGroupUuid
         ,
-        # Device Model ID.
         [Parameter()]
         [string]
-        $ModelID
+        $ModelId
         ,
         [Parameter()]
-        [ValidateSet('Apple'
-                    ,'Android')]
+        [ValidateSet('Apple', 'Android')]
         [string]
         $Platform
         ,
         [Parameter()]
-        [Alias('PageStart')]
+        [Alias('Start', 'PageStart')]
         [int]
         $Page
         ,
-        # Maximumm records per page. Default 500.
         [Parameter()]
+        [Alias('Limit')]
         [int]
         $PageSize
         ,
@@ -803,8 +768,7 @@ function Find-DeviceV3 {
         ,
         [Parameter()]
         [Alias('Sort')]
-        [ValidateSet('ASC'
-                    ,'DESC')]
+        [ValidateSet('ASC', 'DESC')]
         [string]
         $SortOrder
     )
@@ -836,30 +800,25 @@ function Find-DeviceV3 {
 function Find-DeviceV4 {
     [CmdletBinding()]
     param(
-        # OrganizationGroup Identifier.
         [Parameter()]
         [string]
         $OrganizationGroupUuid
         ,
-        # Device Model, for example - iPhone.
         [Parameter()]
-        [ValidateSet('iPhone'
-                    ,'iPad')]
+        [ValidateSet('iPhone', 'iPad')]
         [string[]]
         $Model
         ,
-        # Specific page number to get. 0 based index.
         [Parameter()]
-        [Alias('PageStart')]
+        [Alias('Start', 'PageStart')]
         [int]
         $Page
         ,
-        # Maximumm records per page. Default 500.
         [Parameter()]
+        [Alias('Limit')]
         [int]
         $PageSize
         ,
-        # Orderby column name, for example - applicationname.
         [Parameter()]
         [string]
         $OrderBy
@@ -929,11 +888,13 @@ function Get-DeviceV3 {
     }
     Invoke-RestMethod @Splattributes
 }
-
+New-Variable -Force -Scope Script -Name Headers -Value $null
 
 $ConfigFile = "$($Env:USERPROFILE)\.ws1config_$($Env:USERNAME)@$($Env:COMPUTERNAME).xml"
 $Config = if (Test-Path -PathType Leaf -Path $ConfigFile) { Get-Config -Path $ConfigFile } else { Get-Config }
+$Script:Headers = Login -Url $Config.ApiUrl -Key $Config.ApiCredential -Credential $Config.Ws1Credential
 
+break
 $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Config.ApiCredential.Password)
 $ApiKey = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
 $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Config.Ws1Credential.Password)
