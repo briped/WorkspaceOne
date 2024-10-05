@@ -1,3 +1,172 @@
+<#PSScriptInfo
+
+.VERSION 2024.10.5.1
+
+.GUID d16a1243-3ecb-403a-af51-8701bddf4cb6
+
+.AUTHOR Brian Schmidt Pedersen
+
+.COMPANYNAME N/A
+
+.COPYRIGHT (c) Brian Schmidt Pedersen. All rights reserved.
+
+.TAGS 
+
+.LICENSEURI https://raw.githubusercontent.com/briped/WorkSpaceOneShell/main/LICENSE
+
+.PROJECTURI https://github.com/briped/WorkspaceOneShell
+
+.ICONURI https://play-lh.googleusercontent.com/SA6Tj62xWYGBNoFjV1dXNNv9nhjQ7Zo4fQZQSe11V043bBe-urbd0YNsH5LVT5O32cA
+
+.EXTERNALMODULEDEPENDENCIES 
+
+.REQUIREDSCRIPTS 
+
+.EXTERNALSCRIPTDEPENDENCIES 
+
+.RELEASENOTES
+
+
+.PRIVATEDATA
+
+
+#>
+<#
+
+.DESCRIPTION
+Workspace ONE API PowerShell module for automating WS1.
+
+.SYNOPSIS
+WorkspaceONE API cmdlets
+.NOTES
+TODO
+.EXAMPLE
+TODO
+#>
+function Invoke-ApiRequest {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('ApiUrl')]
+        [uri]
+        $Uri
+        ,
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Microsoft.PowerShell.Commands.WebRequestMethod]
+        $Method
+        ,
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Body
+        ,
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('ApiVersion')]
+        [int]
+        $Version = 1
+        ,
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $ContentType = 'application/json'
+    )
+    $Headers = @{
+        'Accept'         = 'application/json'
+        'Authorization'  = Get-Authorization
+        'aw-tenant-code' = $ApiKey
+    }
+    $Splattributes = @{
+        Method      = $Method
+        ContentType = "application/json;version=$(Version)"
+        Headers     = $Headers
+        Uri         = $Uri
+    }
+    Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
+    Invoke-RestMethod @Splattributes
+}
+function Get-Authorization {
+    [CmdletBinding(DefaultParameterSetName = 'Basic')]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('ApiUrl')]
+        [uri]
+        $Uri
+        ,
+        [Parameter(Mandatory = $true, ParameterSetName = 'Basic')]
+        [ValidateNotNullOrEmpty()]
+        [pscredential]
+        $Credential
+        ,
+        [Parameter(Mandatory = $true, ParameterSetName = 'Certificate')]
+        [ValidateNotNullOrEmpty()]
+        [X509Certificate2]
+        $Certificate
+        ,
+        [Parameter(Mandatory = $false, ParameterSetName = 'OAuth')]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $OAuthUri = 'https://emea.uemauth.vmwservices.com/connect/token'
+        ,
+        [Parameter(Mandatory = $true, ParameterSetName = 'OAuth')]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $OAuthClientId
+        ,
+        [Parameter(Mandatory = $true, ParameterSetName = 'OAuth')]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $OAuthClientSecret
+    )
+    switch ($PSCmdlet.ParameterSetName) {
+        'Basic' {
+            $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Credential.Password)
+            $Username = $Credential.UserName
+            $Password = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+            $Authorization = "Basic $([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("$($Username):$($Password)")))"
+            break
+        }
+        'Certificate' {
+            $AbsolutePath = $Uri.AbsolutePath
+            $Bytes = [System.Text.Encoding]::UTF8.GetBytes($AbsolutePath)
+            $ContentInfo = [System.Security.Cryptography.Pkcs.ContentInfo]::new($Bytes)
+            $SignedCms = [System.Security.Cryptography.Pkcs.SignedCms]::new($ContentInfo, $true)
+            $CmsSigner = [System.Security.Cryptography.Pkcs.CmsSigner]::new($Certificate)
+            $CmsSigner.IncludeOption = [System.Security.Cryptography.X509Certificates.X509IncludeOption]::EndCertOnly
+            $CmsSigner.SignedAttributes.Add([System.Security.Cryptography.Pkcs.Pkcs9SigningTime]::new()) | Out-Null
+            $SignedCms.ComputeSignature($CmsSigner)
+            $Authorization = 'CMSURL`1 '
+            $Authorization += [System.Convert]::ToBase64String($SignedCms.Encode())
+            break
+        }
+        'OAuth' {
+            # https://docs.omnissa.com/bundle/WorkspaceONE-UEM-Console-BasicsVSaaS/page/UsingUEMFunctionalityWithRESTAPI.html
+            $Payload = @{
+                grant_type = 'client_credentials'
+                client_id = $OAuthClientId
+                client_secret = $OAuthClientSecret
+            } | ConvertTo-Json -Compress
+            $Splattributes = @{
+                Uri = $OAuthUri
+                Method = 'POST'
+                ContentType = 'application/json'
+                Body = $Payload
+            }
+            $Response = Invoke-RestMethod @Splattributes
+            $Authorization = "Bearer $($Response.access_token)"
+            break
+        }
+    }
+    $Script:Headers = @{
+        'Accept'         = 'application/json'
+        'Authorization'  = $Authorization
+        'aw-tenant-code' = $ApiKey
+    }
+    $Script:Headers
+}
 function Get-ApiHeader {
     [CmdletBinding()]
     param(
