@@ -34,6 +34,7 @@ foreach ($f in $Module.ExportedFunctions.Values) {
     $FunctionsToExport += $f.Name
 }
 Remove-Module -Name $ModuleFile -ErrorAction SilentlyContinue
+$ManifestFile = [System.IO.FileInfo](Join-Path -Path $PSScriptRoot -ChildPath "$($ModuleFile.BaseName).psd1")
 $Splattributes = @{
     Path                 = $ManifestFile
     RootModule           = $ModuleFile.Name
@@ -50,7 +51,6 @@ $Splattributes = @{
     IconUri              = 'https://play-lh.googleusercontent.com/SA6Tj62xWYGBNoFjV1dXNNv9nhjQ7Zo4fQZQSe11V043bBe-urbd0YNsH5LVT5O32cA'
 }
 $NowString = (Get-Date).ToString('o') -replace "[$([regex]::Escape([System.IO.Path]::GetInvalidFileNameChars() -join ''))]"
-$ManifestFile = [System.IO.FileInfo](Join-Path -Path $PSScriptRoot -ChildPath "$($ModuleFile.BaseName).psd1")
 # Create or update the ModuleManifest:
 if (!$ManifestFile.Exists) {
     New-ModuleManifest @Splattributes
