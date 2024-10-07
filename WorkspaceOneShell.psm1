@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 2024.10.7.0
+.VERSION 2024.10.7.1
 
 .GUID d16a1243-3ecb-403a-af51-8701bddf4cb6
 
@@ -211,6 +211,7 @@ function Get-Authorization {
     }
     $Authorization
 }
+<#
 function Get-ApiHeader {
     [CmdletBinding()]
     param(
@@ -245,6 +246,7 @@ function Get-ApiHeader {
     }
     $Script:Headers
 }
+#>
 function New-ApiConfig {
     [CmdletBinding(DefaultParameterSetName = 'Basic')]
     param(
@@ -263,15 +265,17 @@ function New-ApiConfig {
         [Parameter()]
         [Alias('ApiKey')]
         [ValidateNotNullOrEmpty()]
-        [Security.SecureString]
+        [securestring]
         $Key
         ,
+        <#
         [Parameter()]
         [Alias('AuthMethod', 'AuthenticationMethod')]
         [ValidateSet('Basic', 'Certificate', 'OAuth')]
         [string]
         $Method = 'Basic'
         ,
+        #>
         [Parameter(ParameterSetName = 'Basic')]
         [ValidateNotNullOrEmpty()]
         [pscredential]
@@ -281,6 +285,21 @@ function New-ApiConfig {
         [ValidateNotNullOrEmpty()]
         [X509Certificate]
         $Certificate
+        ,
+        [Parameter(ParameterSetName = 'CertificateFromStore')]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Thumbprint
+        ,
+        [Parameter(ParameterSetName = 'CertificateFromFile')]
+        [ValidateNotNullOrEmpty()]
+        [System.IO.FileInfo]
+        $CertificatePath
+        ,
+        [Parameter(ParameterSetName = 'CertificateFromFile')]
+        [ValidateNotNullOrEmpty()]
+        [securestring]
+        $CertificatePassword
         ,
         [Parameter(ParameterSetName = 'OAuth')]
         [ValidateNotNullOrEmpty()]
@@ -292,6 +311,8 @@ function New-ApiConfig {
         [pscredential]
         $OAuthCredential
     )
+    $PSCmdlet.ParameterSetName
+    break
     $OSEnv = Get-OSEnvironment
     $ConfigTable = @{
         Name   = $OSEnv.UserHost
@@ -307,12 +328,14 @@ function New-ApiConfig {
     }
     $ConfigTable.ApiKey = $Key
 
+    <#
     if (!$Method -or $Method -ne $PSCmdlet.ParameterSetName) {
         $Method = $PSCmdlet.ParameterSetName
     }
     $ConfigTable.AuthenticationMethod = $Method
+    #>
 
-    switch ($Method) {
+    switch ($PSCmdlet.ParameterSetName) {
         'Basic' {
             if (!$Credential -or $Credential.GetType().Name -ne 'PSCredential') {
                 $Credential = Get-Credential -Message 'Admininistrator credentials'
@@ -321,9 +344,23 @@ function New-ApiConfig {
             break
         }
         'Certificate' {
+            #$Certificate = 
+            $ConfigTable.Certificate = $Certificate
+            break
+        }
+        'CertificateFromStore' {
+            if (!$Thumbprint -or (Get-Item)) {
+                #$Certificate = 
+            }
+            
+            $ConfigTable.Certificate = $Certificate
+            break
+        }
+        'CertificateFromFile' {
             if (!$Certificate) {
                 #$Certificate = 
             }
+            
             $ConfigTable.Certificate = $Certificate
             break
         }
