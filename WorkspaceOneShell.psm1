@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 2024.10.5.1
+.VERSION 2024.10.7.0
 
 .GUID d16a1243-3ecb-403a-af51-8701bddf4cb6
 
@@ -43,6 +43,26 @@ TODO
 .EXAMPLE
 TODO
 #>
+function Get-OSEnvironment {
+    $OSEnv = @{}
+    if ($IsLinux) {
+        $OSEnv.User = [System.Environment]::GetEnvironmentVariable('USER')
+        $OSEnv.Host = [System.Environment]::GetEnvironmentVariable('NAME')
+        $OSEnv.Home = [System.Environment]::GetEnvironmentVariable('HOME')
+    }
+    elseif ($IsMacOS) {
+        $OSEnv.User = [System.Environment]::GetEnvironmentVariable('USER')
+        $OSEnv.Host = Invoke-Expression -Command 'scutil --get LocalHostName'
+        $OSEnv.Home = [System.Environment]::GetEnvironmentVariable('HOME')
+    }
+    else {
+        $OSEnv.User = [System.Environment]::GetEnvironmentVariable('USERNAME')
+        $OSEnv.Host = [System.Environment]::GetEnvironmentVariable('COMPUTERNAME')
+        $OSEnv.Home = [System.Environment]::GetEnvironmentVariable('USERPROFILE')
+    }
+    $OSEnv.UserHost = "$($OSEnv.User)@$($OSEnv.Host)"
+    New-Object -TypeName PSCustomObject -Property $OSEnv
+}
 function Invoke-ApiRequest {
     [CmdletBinding()]
     param(
@@ -73,16 +93,45 @@ function Invoke-ApiRequest {
         [string]
         $ContentType = 'application/json'
     )
+    $OSEnv = Get-OSEnvironment
+    $Authributes = @{
+        Uri = $Uri
+    }
+    $OSEnv | ConvertTo-Json -Compress
+    $Script:Config | ConvertTo-Json -Compress
+    if (!$Script:Config -or !$Script:Config.Name -or $Script:Config.Name -ne $OSEnv.UserHost) {
+        Write-Error 'Missing configuration' -ErrorAction Stop
+    }
+    switch ($Script:Config.Method) {
+        'Basic' {
+            $Authributes.Credential = $Script:Config.Credential
+            break
+        }
+        'Certificate' {
+            $Authributes.Certificate = $Script:Config.Certificate
+            break
+        }
+        'OAuth' {
+            $Authributes.OAuthUrl = $Script:Config.OAuthUrl
+            $Authributes.OAuthCredential = $Script:Config.OAuthCredential
+            break
+        }
+    }
+    $Authorization = Get-Authorization @Authributes
+
+    $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Script:Config.ApiKey)
+    $ApiKey = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
     $Headers = @{
         'Accept'         = 'application/json'
-        'Authorization'  = Get-Authorization
+        'Authorization'  = $Authorization
         'aw-tenant-code' = $ApiKey
     }
+
     $Splattributes = @{
+        Uri         = $Uri
         Method      = $Method
         ContentType = "application/json;version=$(Version)"
         Headers     = $Headers
-        Uri         = $Uri
     }
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
     Invoke-RestMethod @Splattributes
@@ -103,23 +152,19 @@ function Get-Authorization {
         ,
         [Parameter(Mandatory = $true, ParameterSetName = 'Certificate')]
         [ValidateNotNullOrEmpty()]
-        [X509Certificate2]
+        [X509Certificate]
         $Certificate
         ,
-        [Parameter(Mandatory = $false, ParameterSetName = 'OAuth')]
+        [Parameter(ParameterSetName = 'OAuth')]
         [ValidateNotNullOrEmpty()]
-        [string]
-        $OAuthUri = 'https://emea.uemauth.vmwservices.com/connect/token'
+        [Alias('TokenUrl')]
+        [uri]
+        $OAuthUrl = 'https://emea.uemauth.vmwservices.com/connect/token'
         ,
-        [Parameter(Mandatory = $true, ParameterSetName = 'OAuth')]
+        [Parameter(ParameterSetName = 'OAuth')]
         [ValidateNotNullOrEmpty()]
-        [string]
-        $OAuthClientId
-        ,
-        [Parameter(Mandatory = $true, ParameterSetName = 'OAuth')]
-        [ValidateNotNullOrEmpty()]
-        [string]
-        $OAuthClientSecret
+        [pscredential]
+        $OAuthCredential
     )
     switch ($PSCmdlet.ParameterSetName) {
         'Basic' {
@@ -143,6 +188,10 @@ function Get-Authorization {
             break
         }
         'OAuth' {
+            $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($OAuthCredential.Password)
+            $OAuthClientId = $OAuthCredential.UserName
+            $OAuthClientSecret = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+            break
             # https://docs.omnissa.com/bundle/WorkspaceONE-UEM-Console-BasicsVSaaS/page/UsingUEMFunctionalityWithRESTAPI.html
             $Payload = @{
                 grant_type = 'client_credentials'
@@ -150,7 +199,7 @@ function Get-Authorization {
                 client_secret = $OAuthClientSecret
             } | ConvertTo-Json -Compress
             $Splattributes = @{
-                Uri = $OAuthUri
+                Uri = $OAuthUrl
                 Method = 'POST'
                 ContentType = 'application/json'
                 Body = $Payload
@@ -160,12 +209,7 @@ function Get-Authorization {
             break
         }
     }
-    $Script:Headers = @{
-        'Accept'         = 'application/json'
-        'Authorization'  = $Authorization
-        'aw-tenant-code' = $ApiKey
-    }
-    $Script:Headers
+    $Authorization
 }
 function Get-ApiHeader {
     [CmdletBinding()]
@@ -202,7 +246,7 @@ function Get-ApiHeader {
     $Script:Headers
 }
 function New-ApiConfig {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Basic')]
     param(
         [Parameter()]
         [Alias('PSPath')]
@@ -211,39 +255,97 @@ function New-ApiConfig {
         $Path
         ,
         [Parameter()]
-        [Alias('ApiUrl')]
+        [Alias('ApiUri')]
         [ValidateNotNullOrEmpty()]
+        [uri]
+        $Uri
+        ,
+        [Parameter()]
+        [Alias('ApiKey')]
+        [ValidateNotNullOrEmpty()]
+        [Security.SecureString]
+        $Key
+        ,
+        [Parameter()]
+        [Alias('AuthMethod', 'AuthenticationMethod')]
+        [ValidateSet('Basic', 'Certificate', 'OAuth')]
         [string]
-        $Url
+        $Method = 'Basic'
+        ,
+        [Parameter(ParameterSetName = 'Basic')]
+        [ValidateNotNullOrEmpty()]
+        [pscredential]
+        $Credential
+        ,
+        [Parameter(ParameterSetName = 'Certificate')]
+        [ValidateNotNullOrEmpty()]
+        [X509Certificate]
+        $Certificate
+        ,
+        [Parameter(ParameterSetName = 'OAuth')]
+        [ValidateNotNullOrEmpty()]
+        [uri]
+        $OAuthUrl = 'https://emea.uemauth.vmwservices.com/connect/token'
+        ,
+        [Parameter(ParameterSetName = 'OAuth')]
+        [ValidateNotNullOrEmpty()]
+        [pscredential]
+        $OAuthCredential
     )
-    #TODO: Add Credential and API key parameters
-    if ($IsLinux) {
-        $EnvUser = 'USER'
-        $EnvName = 'NAME'
-        $EnvHome = 'HOME'
+    $OSEnv = Get-OSEnvironment
+    $ConfigTable = @{
+        Name   = $OSEnv.UserHost
     }
-    else {
-        $EnvUser = 'USERNAME'
-        $EnvName = 'COMPUTERNAME'
-        $EnvHome = 'USERPROFILE'
+
+    while (!$Uri -or ($Uri -as [uri]).Scheme -notmatch 'https?') {
+        $Uri = Read-Host -Prompt 'API URL'
     }
-    $HostUser = [System.Environment]::GetEnvironmentVariable($EnvUser)
-    $HostName = [System.Environment]::GetEnvironmentVariable($EnvName)
-    $HostHome = [System.Environment]::GetEnvironmentVariable($EnvHome)
-    $UserHost = "$($HostUser)@$($HostName)"
-    if (!$Url -or ($Url -as [uri]).Scheme -notmatch 'https?') {
-        $Url = Read-Host -Prompt 'Workspace ONE API URL'
+    $ConfigTable.ApiUrl = $Uri
+
+    if (!$Key) {
+        $Key = Read-Host -AsSecureString -Prompt 'API Key'
     }
-    $Config = New-Object -TypeName PSCustomObject -Property @{
-        Name = $UserHost
-        ApiUrl = [uri]$Url
-        ApiCredential = (Get-Credential -Message 'Workspace ONE API key' -UserName 'aw-tenant-code')
-        Ws1Credential = (Get-Credential -Message 'Workspace ONE admin')
+    $ConfigTable.ApiKey = $Key
+
+    if (!$Method -or $Method -ne $PSCmdlet.ParameterSetName) {
+        $Method = $PSCmdlet.ParameterSetName
     }
+    $ConfigTable.AuthenticationMethod = $Method
+
+    switch ($Method) {
+        'Basic' {
+            if (!$Credential -or $Credential.GetType().Name -ne 'PSCredential') {
+                $Credential = Get-Credential -Message 'Admininistrator credentials'
+            }
+            $ConfigTable.Credential = $Credential
+            break
+        }
+        'Certificate' {
+            if (!$Certificate) {
+                #$Certificate = 
+            }
+            $ConfigTable.Certificate = $Certificate
+            break
+        }
+        'OAuth' {
+            if (!$OAuthUrl -or ($OAuthUrl -as [uri]).Scheme -notmatch 'https?') {
+                $OAuthUrl = Read-Host -Prompt 'OAuth URL'
+            }
+            $ConfigTable.OAuthUrl = $OAuthUrl
+
+            if (!$OAuthCredential -or $OAuthCredential.GetType().Name -ne 'PSCredential') {
+                $OAuthCredential = Get-Credential -Message 'OAuth Client ID and Secret'
+            }
+            $ConfigTable.OAuthCredential = $OAuthCredential
+            break
+        }
+    }
+    $Config = New-Object -TypeName PSCustomObject -Property $ConfigTable
+
     if (!$Path -or !(Test-Path -Path $Path -PathType Leaf -ErrorAction SilentlyContinue)) {
         Add-Type -AssemblyName System.Windows.Forms
         $FileBrowser = New-Object -TypeName System.Windows.Forms.SaveFileDialog
-        $FileBrowser.InitialDirectory = $HostHome
+        $FileBrowser.InitialDirectory = $OSEnv.Home
         $FileBrowser.FileName = ".ws1config_$($UserHost).xml" 
         $FileBrowser.Filter = 'Common Language Infrastructure eXensible Markup Language (*.xml)|*.xml|All files (*.*)|*.*'
         $FileBrowser.ShowDialog() | Out-Null
@@ -261,25 +363,12 @@ function Get-ApiConfig {
         [System.IO.FileInfo]
         $Path
     )
-    if ($IsLinux) {
-        $EnvUser = 'USER'
-        $EnvName = 'NAME'
-        $EnvHome = 'HOME'
-    }
-    else {
-        $EnvUser = 'USERNAME'
-        $EnvName = 'COMPUTERNAME'
-        $EnvHome = 'USERPROFILE'
-    }
-    $HostUser = [System.Environment]::GetEnvironmentVariable($EnvUser)
-    $HostName = [System.Environment]::GetEnvironmentVariable($EnvName)
-    $HostHome = [System.Environment]::GetEnvironmentVariable($EnvHome)
-    $UserHost = "$($HostUser)@$($HostName)"
+    $OSEnv = Get-OSEnvironment
     if (!$Path -or !(Test-Path -Path $Path -PathType Leaf -ErrorAction SilentlyContinue)) {
         Add-Type -AssemblyName System.Windows.Forms
         $FileBrowser = New-Object -TypeName System.Windows.Forms.OpenFileDialog
-        $FileBrowser.InitialDirectory = $HostHome
-        $FileBrowser.FileName = ".ws1config_$($UserHost).xml"
+        $FileBrowser.InitialDirectory = $OSEnv.Host
+        $FileBrowser.FileName = ".ws1config_$($OSEnv.UserHost).xml"
         $FileBrowser.Filter = 'Common Language Infrastructure eXensible Markup Language (*.xml)|*.xml|All files (*.*)|*.*'
         $FileBrowser.ShowDialog() | Out-Null
         $Path = [System.IO.FileInfo]$FileBrowser.FileName
@@ -334,13 +423,11 @@ function Get-Notification {
     }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
     $Splattributes = @{
-        Method = 'GET'
-        ContentType = 'application/json'
-        Headers = $Headers
         Uri = $Uri
+        Method = 'GET'
     }
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-    Invoke-RestMethod @Splattributes
+    Invoke-ApiRequest @Splattributes
 }
 function Clear-Notification {
     [CmdletBinding(SupportsShouldProcess = $true)]
@@ -359,13 +446,11 @@ function Clear-Notification {
     # TODO: Update the ShouldProcess text
     if ($PSCmdlet.ShouldProcess("Dismiss Notification ID '$($Id)'.")) {
         $Splattributes = @{
-            Method = 'POST'
-            ContentType = 'application/json'
-            Headers = $Headers
             Uri = "$($Config.ApiUrl)/system/notifications/$($Id)"
+            Method = 'POST'
         }
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-        Invoke-RestMethod @Splattributes
+        Invoke-ApiRequest @Splattributes
     }
 }
 function Find-PurchasedApp {
@@ -438,13 +523,11 @@ function Find-PurchasedApp {
     }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
     $Splattributes = @{
-        Method = 'GET'
-        ContentType = 'application/json'
-        Headers = $Headers
         Uri = $Uri
+        Method = 'GET'
     }
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-    $Response = Invoke-RestMethod @Splattributes
+    $Response = Invoke-ApiRequest @Splattributes
     $Response.Application
 }
 function Get-DeviceWithPurchasedApp {
@@ -486,13 +569,11 @@ function Get-DeviceWithPurchasedApp {
     }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
     $Splattributes = @{
-        Method = 'GET'
-        ContentType = 'application/json'
-        Headers = $Headers
         Uri = $Uri
+        Method = 'GET'
     }
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-    $Response = Invoke-RestMethod @Splattributes
+    $Response = Invoke-ApiRequest @Splattributes
     $Response.DeviceId
 }
 function Get-PurchasedApp {
@@ -504,13 +585,11 @@ function Get-PurchasedApp {
         $Id
     )
     $Splattributes = @{
-        Method = 'GET'
-        ContentType = 'application/json'
-        Headers = $Headers
         Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($Id)"
+        Method = 'GET'
     }
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-    $Response = Invoke-RestMethod @Splattributes
+    $Response = Invoke-ApiRequest @Splattributes
     $Response.Application
 }
 function Install-PurchasedAppV1 {
@@ -562,14 +641,12 @@ function Install-PurchasedAppV1 {
     # TODO: Update the ShouldProcess text
     if ($PSCmdlet.ShouldProcess("Install Application ID '$($ApplicationId)' on Device ID '$($DeviceId)'.")) {
         $Splattributes = @{
-            Method = 'POST'
-            ContentType = 'application/json'
-            Header = $Headers
             Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationId)/install"
+            Method = 'POST'
             Body = $Data | ConvertTo-Json -Compress
         }
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-        Invoke-RestMethod @Splattributes
+        Invoke-ApiRequest @Splattributes
     }
 }
 function Install-PurchasedAppV2 {
@@ -609,14 +686,12 @@ function Install-PurchasedAppV2 {
     # TODO: Update the ShouldProcess text
     if ($PSCmdlet.ShouldProcess("Install Application UUID '$($ApplicationUuid)' on Device UUID '$($DeviceUuid)'.")) {
         $Splattributes = @{
-            Method = 'POST'
-            ContentType = 'application/json'
-            Header = $Headers
             Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationUuid)/install"
+            Method = 'POST'
             Body = $Data | ConvertTo-Json -Compress
         }
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-        Invoke-RestMethod @Splattributes
+        Invoke-ApiRequest @Splattributes
     }
 }
 function Remove-PurchasedAppV1 {
@@ -661,14 +736,12 @@ function Remove-PurchasedAppV1 {
     # TODO: Update the ShouldProcess text
     if ($PSCmdlet.ShouldProcess("Install Application ID '$($ApplicationId)' on Device ID '$($DeviceId)'.")) {
         $Splattributes = @{
-            Method = 'POST'
-            ContentType = 'application/json'
-            Header = $Headers
             Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationId)/uninstall"
+            Method = 'POST'
             Body = $Data | ConvertTo-Json -Compress
         }
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-        Invoke-RestMethod @Splattributes
+        Invoke-ApiRequest @Splattributes
     }
 }
 function Remove-PurchasedAppV2 {
@@ -708,14 +781,12 @@ function Remove-PurchasedAppV2 {
     # TODO: Update the ShouldProcess text
     if ($PSCmdlet.ShouldProcess("Install Application UUID '$($ApplicationUuid)' on Device UUID '$($DeviceUuid)'.")) {
         $Splattributes = @{
-            Method = 'POST'
-            ContentType = 'application/json'
-            Header = $Headers
             Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationUuid)/uninstall"
+            Method = 'POST'
             Body = $Data | ConvertTo-Json -Compress
         }
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-        Invoke-RestMethod @Splattributes
+        Invoke-ApiRequest @Splattributes
     }
 }
 function Update-PurchasedAppV1 {
@@ -736,13 +807,11 @@ function Update-PurchasedAppV1 {
     # TODO: Update the ShouldProcess text
     if ($PSCmdlet.ShouldProcess("Update Application ID '$($ApplicationId)' on devices.")) {
         $Splattributes = @{
-            Method = 'POST'
-            ContentType = 'application/json'
-            Header = $Headers
             Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationId)"
+            Method = 'POST'
         }
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-        Invoke-RestMethod @Splattributes
+        Invoke-ApiRequest @Splattributes
     }
 }
 function Find-DeviceV1 {
@@ -821,12 +890,10 @@ function Find-DeviceV1 {
     }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
     $Splattributes = @{
-        Method = 'GET'
-        ContentType = 'application/json'
-        Headers = $Headers
         Uri = $Uri
+        Method = 'GET'
     }
-    Invoke-RestMethod @Splattributes
+    Invoke-ApiRequest @Splattributes
 }
 function Find-DeviceV2 {
     [CmdletBinding()]
@@ -904,12 +971,10 @@ function Find-DeviceV2 {
     }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
     $Splattributes = @{
-        Method = 'GET'
-        ContentType = 'application/json'
-        Headers = $Headers
         Uri = $Uri
+        Method = 'GET'
     }
-    Invoke-RestMethod @Splattributes
+    Invoke-ApiRequest @Splattributes
 }
 function Find-DeviceV3 {
     [CmdletBinding()]
@@ -977,12 +1042,10 @@ function Find-DeviceV3 {
 	}
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
     $Splattributes = @{
-        Method = 'GET'
-        ContentType = 'application/json'
-        Headers = $Headers
         Uri = $Uri
+        Method = 'GET'
     }
-    Invoke-RestMethod @Splattributes
+    Invoke-ApiRequest @Splattributes
 }
 function Find-DeviceV4 {
     [CmdletBinding()]
@@ -1021,12 +1084,10 @@ function Get-DeviceById {
         $Id
     )
     $Splattributes = @{
-        Method = 'GET'
-        ContentType = 'application/json'
-        Headers = $Headers
         Uri = "$($Config.ApiUrl)/mdm/devices/$($Id)"
+        Method = 'GET'
     }
-    Invoke-RestMethod @Splattributes
+    Invoke-ApiRequest @Splattributes
     # TODO: Combine Get-DeviceById and Get-DeviceByUdid
 }
 function Get-DeviceByUdid {
@@ -1037,12 +1098,10 @@ function Get-DeviceByUdid {
         $Udid
     )
     $Splattributes = @{
-        Method = 'GET'
-        ContentType = 'application/json'
-        Headers = $Headers
         Uri = "$($Config.ApiUrl)/mdm/devices/udid/$($Udid)"
+        Method = 'GET'
     }
-    Invoke-RestMethod @Splattributes
+    Invoke-ApiRequest @Splattributes
     # TODO: Combine Get-DeviceById and Get-DeviceByUdid
 }
 function Get-DeviceV2 {
@@ -1053,12 +1112,10 @@ function Get-DeviceV2 {
         $Uuid
     )
     $Splattributes = @{
-        Method = 'GET'
-        ContentType = 'application/json'
-        Headers = $Headers
         Uri = "$($Config.ApiUrl)/mdm/devices/$($Uuid)"
+        Method = 'GET'
     }
-    Invoke-RestMethod @Splattributes
+    Invoke-ApiRequest @Splattributes
 }
 function Get-DeviceV3 {
     [CmdletBinding()]
@@ -1068,11 +1125,11 @@ function Get-DeviceV3 {
         $Uuid
     )
     $Splattributes = @{
-        Method = 'GET'
-        ContentType = 'application/json'
-        Headers = $Headers
         Uri = "$($Config.ApiUrl)/mdm/devices/$($Uuid)"
+        Method = 'GET'
     }
-    Invoke-RestMethod @Splattributes
+    Invoke-ApiRequest @Splattributes
 }
-New-Variable -Force -Scope Script -Name Headers -Value $null
+#New-Variable -Force -Scope Script -Name Headers -Value $null
+#New-Variable -Force -Scope Script -Name ApiKey -Value $null
+New-Variable -Force -Scope Script -Name Config -Value $null
