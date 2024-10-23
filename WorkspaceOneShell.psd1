@@ -12,7 +12,7 @@
 RootModule = 'WorkspaceOneShell.psm1'
 
 # Version number of this module.
-ModuleVersion = '2024.10.7.0'
+ModuleVersion = '2024.10.7.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -70,7 +70,7 @@ Description = 'Workspace ONE API PowerShell module for automating WS1.'
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Clear-Notification', 'Find-DeviceV1', 'Find-DeviceV2', 'Find-DeviceV3', 
-               'Find-DeviceV4', 'Find-PurchasedApp', 'Get-ApiConfig', 'Get-ApiHeader', 
+               'Find-DeviceV4', 'Find-PurchasedApp', 'Get-ApiConfig', 
                'Get-AppStoreDetails', 'Get-Authorization', 'Get-DeviceById', 
                'Get-DeviceByUdid', 'Get-DeviceV2', 'Get-DeviceV3', 
                'Get-DeviceWithPurchasedApp', 'Get-Notification', 'Get-OSEnvironment', 
