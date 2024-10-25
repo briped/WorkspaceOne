@@ -58,7 +58,7 @@ function Invoke-ApiRequest {
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Script:Config.ApiKey)
     $ApiKey = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
     $Headers = @{
-        'Accept'         = 'application/json'
+        'Accept'         = "application/json;version=$($Version)"
         'Authorization'  = $Authorization
         'aw-tenant-code' = $ApiKey
     }
