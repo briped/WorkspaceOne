@@ -21,66 +21,47 @@ seensince and lastseen fields accept the following Valid DateTime formats :
     yyyy-MM-dd HH-mm-ss-tt, 
     yyyy-MM-ddTHH-mm-ss-tt.
 
-.NOTES
-Information or caveats about the function e.g. 'This function is not supported in Linux'
+.PARAMETER User
+Filters devices based on enrolled username.
 
+.PARAMETER Model
+Filters devices based on model. For example iPhone.
+
+.PARAMETER Platform
+Filters devices based on platform. For example Apple.
+
+.PARAMETER LastSeen
+Filters devices based on the date when they were last seen.
+
+.PARAMETER Ownership
+Filters devices based on ownership type. One of C, E, S or Undefined.
+
+.PARAMETER LocationGroupId
+Limits the search to given OrganizationGroup. Defaults to admin's OrganizationGroup.
+
+.PARAMETER Compliant
+Filters devices based on specified compliant status. Possible values are true (for Compliant) and false (for NonCompliant).
+
+.PARAMETER SeenSince
+Filters devices based on the date when they were seen after given date.
+
+.PARAMETER Page
+Filters search result to return results based on page number. Page numbering is 0 based and omitting this parameter will return the first page.
+
+.PARAMETER PageSize
+Limits the number of search results per page. Defaults to 500.
+
+.PARAMETER OrderBy
+Sort results based on given field. One of model, lastseen, ownership, platform, deviceid etc. Defaults to deviceid.
+
+.PARAMETER SortOrder
+Sort order of results. One of ASC or DESC. Defaults to ASC.
+
+.NOTES
 [ base url: /API/mdm , api version: 1 ]
 get /devices/search
 
-.PARAMETER user
-Filters devices based on enrolled username.
-query	string
-
-.PARAMETER model
-Filters devices based on model. For example iPhone.
-query	string
-
-.PARAMETER platform
-Filters devices based on platform. For example Apple.
-query	string
-
-.PARAMETER lastseen
-Filters devices based on the date when they were last seen.
-query	date-time
-
-.PARAMETER ownership
-Filters devices based on ownership type. One of C, E, S or Undefined.
-query	string
-
-.PARAMETER lgid
-Limits the search to given OrganizationGroup. Defaults to admin's OrganizationGroup.
-query	integer
-
-.PARAMETER compliantstatus
-Filters devices based on specified compliant status. Possible values are true (for Compliant) and false (for NonCompliant).
-query	string
-
-.PARAMETER seensince
-Filters devices based on the date when they were seen after given date.
-query	date-time
-
-.PARAMETER page
-Filters search result to return results based on page number. Page numbering is 0 based and omitting this parameter will return the first page.
-query	integer
-
-.PARAMETER pagesize
-Limits the number of search results per page. Defaults to 500.
-query	integer
-
-.PARAMETER orderby
-Sort results based on given field. One of model, lastseen, ownership, platform, deviceid etc. Defaults to deviceid.
-query	string
-
-.PARAMETER sortorder
-Sort order of results. One of ASC or DESC. Defaults to ASC.
-query	string
-
-.LINK
-Specify a URI to a help page, this will show when Get-Help -Online is used.
-
 .EXAMPLE
-Test-MyTestFunction -Verbose
-Explanation of the function or its result. You can include multiple examples with additional .EXAMPLE lines
 #>
 function Find-DeviceV1 {
     [CmdletBinding()]
@@ -109,8 +90,8 @@ function Find-DeviceV1 {
         $Compliant
         ,
         [Parameter()]
-        [string]
-        $OrganizationGroupUuid # lgid #TODO: Follow-up check if LocationGroupId rather than OrganisationGroupUuid.
+        [int]
+        $LocationGroupId
         ,
         [Parameter()]
         [datetime]
@@ -146,15 +127,18 @@ function Find-DeviceV1 {
     if ($User) { $Data.user = $User }
     if ($Model) { $Data.model = $Model }
     if ($Platform) { $Data.platform = $Platform }
+    if ($LastSeen) { $Data.lastseen = $LastSeen }
     if ($Ownership) { $Data.ownership = $Ownership }
-    if ($Compliance) { $Data.compliance_status = $Compliance }
+    if ($LocationGroupId) { $Data.lgid = $LocationGroupId }
+    if ($Compliance) { $Data.compliantstatus = $Compliance }
+    if ($SeenSince) { $Data.seensince = $SeenSince }
     if ($Page -and $Page -gt 0) { $Data.page = $Page }
     if ($PageSize -and $PageSize -gt 0) { $Data.pagesize = $PageSize }
     if ($OrderBy) { $Data.orderby = $OrderBy }
     if ($SortOrder -and $SortOrder -ne 'ASC') { $Data.sortorder = $SortOrder }
     $Query = @()
     foreach ($k in $Data.Keys) {
-        $Query += "$($k)=$($Data[$k])"
+        $Query += "$($k)=$([uri]::EscapeDataString($Data[$k]))"
     }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
     $Splattributes = @{
