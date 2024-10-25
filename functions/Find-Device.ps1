@@ -61,7 +61,6 @@ Sort order of results. One of ASC or DESC. Defaults to ASC.
 [ base url: /API/mdm , api version: 1-4 ]
 get /devices/search
 
-
 v4
 {
   "organization_group_uuid": "1d1f131a-5776-4df8-b7f8-a0b3dbea7ff4",
