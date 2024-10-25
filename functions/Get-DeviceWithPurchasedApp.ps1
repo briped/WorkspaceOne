@@ -6,29 +6,26 @@ Provides a list of devices that have the specified purchased application install
 Gets list of devices matching on the input query parameters values.
 
 .NOTES
+[ base url: /API/mam , api version: 1 ]
 get /apps/purchased/{applicationid}/devices
 
-.PARAMETER applicationid
-(required)
+.PARAMETER ApplicationId
 The application ID.
-path	integer
+Required.
 
-.PARAMETER status
-(required)
-status - installed/assigned (Required).
-query	string
+.PARAMETER Status
+Device assignment status - installed/assigned.
+Required
 
-.PARAMETER locationgroupid
+.PARAMETER LocationGroupId
 The LocationGroup Identifier, for example - 777.
-query	string
 
-.PARAMETER page
+.PARAMETER Page
 Specific page number to get. 0 based index.
-query	string
 
-.PARAMETER pagesize
-Maximumm records per page. Default 500.
-query	string
+.PARAMETER PageSize
+Maximumm records per page.
+Default 500.
 
 .LINK
 .EXAMPLE

@@ -1,3 +1,20 @@
+<#
+.SYNOPSIS
+Import API configuration.
+
+.DESCRIPTION
+Imports the API configuration from a CliXML file.
+
+.PARAMETER Path
+The filepath to the CliXML file containing the configuration.
+
+.PARAMETER PassThru
+Returns the imported configuration.
+
+.NOTES
+.LINK
+.EXAMPLE
+#>
 function Import-ApiConfig {
     [CmdletBinding()]
     param(
