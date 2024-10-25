@@ -69,15 +69,7 @@ Description = 'Workspace ONE API PowerShell module for automating WS1.'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Clear-Notification', 'Find-DeviceV1', 'Find-DeviceV2', 'Find-DeviceV3', 
-               'Find-DeviceV4', 'Find-PurchasedApp', 'Get-ApiConfig', 
-               'Get-AppStoreDetails', 'Get-Authorization', 'Get-DeviceById', 
-               'Get-DeviceByUdid', 'Get-DeviceV2', 'Get-DeviceV3', 
-               'Get-DeviceWithPurchasedApp', 'Get-Notification', 'Get-OSEnvironment', 
-               'Get-PurchasedApp', 'Install-PurchasedAppV1', 
-               'Install-PurchasedAppV2', 'Invoke-ApiRequest', 'New-ApiConfig', 
-               'Remove-PurchasedAppV1', 'Remove-PurchasedAppV2', 
-               'Update-PurchasedAppV1'
+FunctionsToExport = '*'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = '*'
