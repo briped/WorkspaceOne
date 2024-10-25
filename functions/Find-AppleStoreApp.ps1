@@ -5,16 +5,10 @@ Searches in App stores for the applications with the specified search string and
 .DESCRIPTION
 Searches in the App store for applications that match a specified search string (Example: Boxer) and return the details.
 
-.NOTES
-Information or caveats about the function e.g. 'This function is not supported in Linux'
-
-get /apps/applestore/search
-[ base url: /API/mam , api version: 1 ]
-
-.PARAMETER appname
+.PARAMETER Name
 Application name to be searched. Example: Boxer. (Required).
-query	string
 
+.NOTES
 .LINK
 .EXAMPLE
 #>
@@ -30,6 +24,7 @@ function Find-AppleStoreApp {
     $Splattributes = @{
         Uri = $Uri
         Method = 'GET'
+        Version = 1
     }
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
     Invoke-ApiRequest @Splattributes
