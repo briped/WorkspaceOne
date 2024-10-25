@@ -5,58 +5,34 @@ Install the specified purchased application on the device
 .DESCRIPTION
 Install the specified purchased application on the device.
 
-.NOTES
-[ base url: /API/mam , api version: 1 ]
-post /apps/purchased/{applicationid}/install
-[ base url: /API/mam , api version: 2 ]
-post /apps/purchased/{applicationUuid}/install
-
-.PARAMETER applicationid
-(required)
+.PARAMETER ApplicationId
 Id of the Application to be installed, for example - 123.
-path	string
+Required
 
-.PARAMETER applicationUuid
-(required)
-Unique Identifier for the purchased app to be installed on the device.(Required).
-path	string
+.PARAMETER ApplicationUuid
+Unique Identifier for the purchased app to be installed on the device.
+Required
 
-.PARAMETER Parametercontenttype
-application/json
+.PARAMETER DeviceId
+Id of the device.
 
-.PARAMETER deviceInfo
-(required)
-Details of the device on which the Application to be installed. Accepted format is guid E.g. 3d958f38-246e-4854-a306-189d941ab073(Required).
+.PARAMETER DeviceUuid
+The Universally Unique Identifier of the device.
 
-.PARAMETER body
-DeviceInfo {
-    DeviceId (integer, optional): Gets or sets the device id.,
-    Udid (string, optional): Gets or sets the device's unique identifier.,
-    SerialNumber (string, optional): Gets or sets the serial number reported by the device.,
-    MacAddress (string, optional): Gets or sets macaddress of the device.
-}
-DeviceInformationV2Model {
-    device_uuid (string, optional): Unique identifier of the device.,
-    device_udid (string, optional): UDID of the device,
-    serial_number (string, optional): Device serial number,
-    mac_address (string, optional): MAC Address of the device.
-}
-ModelExample Value
-{
-    "DeviceId": 1,
-    "device_uuid": "f88ba0e1-149e-4006-8041-c64e2f287653",
+.PARAMETER DeviceUdid
+The Unique Device Identifier of the device.
 
-    "Udid": "6bf0f04c73681fbecfc3eb4f13cbf05b",
-    "device_udid": "827BE1C5AEC05C378C61C44103E9D3FCB2EC354D",
+.PARAMETER SerialNumber
+The serial number reported by the device.
 
-    "SerialNumber": "LGH871c18f631a",
-    "serial_number": "BLCA34786H",
+.PARAMETER MacAddress
+MAC Address of the device
 
-    "MacAddress": "0x848506B900BA"
-    "mac_address": "485A3F880798"
-}
+.PARAMETER Force
+Don't ask for confirmation, unless -Confirm is explicitly specified.
 
-.LINK
+.NOTES
+
 .EXAMPLE
 #>
 function Install-PurchasedApp {
@@ -134,12 +110,13 @@ function Install-PurchasedApp {
     $Data = @{
         DeviceId = $DeviceID
     }
+    $Body = ($Data | ConvertTo-Json -Compress)
     # TODO: Update the ShouldProcess text
-    if ($PSCmdlet.ShouldProcess("Device ID '$($DeviceId)'", "Install Application ID '$($ApplicationIdentifier)'")) {
+    if ($PSCmdlet.ShouldProcess($Body, "Install Application ID '$($ApplicationIdentifier)'")) {
         $Splattributes = @{
-            Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationId)/install"
+            Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationIdentifier)/install"
             Method = 'POST'
-            Body = ($Data | ConvertTo-Json -Compress)
+            Body = $Body
             Version = $ApiVersion
         }
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
