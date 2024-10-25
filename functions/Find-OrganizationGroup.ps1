@@ -5,39 +5,28 @@ Searches for organization groups using the query information provided.
 .DESCRIPTION
 Search organization by the given parameter.
 
-.NOTES
-get /groups/search
-[ base url: /API/system , api version: 1 ]
-
-.PARAMETER name
+.PARAMETER Name
 The OrganizationGroup name, such as "Global".
-query	string
 
-.PARAMETER type
+.PARAMETER Type
 The OrganizationGroup type. (eg. "Container","Customer","Partner").
-query	string
 
-.PARAMETER groupid
+.PARAMETER GroupId
 The organization group identifier[Activation code] to search for.[Exact match is performed for this attribute].
-query	string
 
-.PARAMETER orderby
+.PARAMETER OrderBy
 Orders the results based on this attribute-value[Valid values are: Id/Name/GroupId/LocationGroupType].
-query	string
 
-.PARAMETER page
+.PARAMETER Page
 Specific page number to get. 0 based index.
-query	integer
 
-.PARAMETER pagesize
+.PARAMETER PageSize
 Maximum records per page. Default 500.
-query	integer
 
-.PARAMETER sortorder
+.PARAMETER SortOrder
 Sorting order. Allowed values are ASC or DESC. Defaults to ASC if this attribute is not specified.
-query	string
 
-.LINK
+.NOTES
 .EXAMPLE
 #>
 function Find-OrganizationGroup {

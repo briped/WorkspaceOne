@@ -5,10 +5,6 @@ Provides a list of devices that have the specified purchased application install
 .DESCRIPTION
 Gets list of devices matching on the input query parameters values.
 
-.NOTES
-[ base url: /API/mam , api version: 1 ]
-get /apps/purchased/{applicationid}/devices
-
 .PARAMETER ApplicationId
 The application ID.
 Required.
@@ -27,7 +23,7 @@ Specific page number to get. 0 based index.
 Maximumm records per page.
 Default 500.
 
-.LINK
+.NOTES
 .EXAMPLE
 #>
 function Get-DeviceWithPurchasedApp {

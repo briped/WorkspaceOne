@@ -5,28 +5,19 @@ Retrieves the list of notifications based on the core user.
 .DESCRIPTION
 This API is used to get a list of all the notifications created for a particular admin.
 
+.PARAMETER Page
+Start index for the list of fetched notifications.
+Default: 0
+
+.PARAMETER PageSize
+Number of notifications fetched per page.
+Default: 0
+
+.PARAMETER Status
+Option to fetch active/dismissed notifications.
+Default: Active
+
 .NOTES
-get /notifications
-[ base url: /API/system , api version: 2 ]
-
-.PARAMETER startIndex
-Optional. Start index for the list of fetched notifications. Default value is 0.
-query	integer
-
-.PARAMETER pageSize
-Optional. Number of notifications fetched per page. Default value is 0.
-query	integer
-
-.PARAMETER active
-Optional. Option to fetch active/dismissed notifications. Value can be true or false. Default value is true.
-query	boolean
-
-.PARAMETER cultureCode
-Optional. Option to provide the locale setting for the fetched notifications. Default value is the default culture code for the core user.
-query	string
-
-
-.LINK
 .EXAMPLE
 #>
 function Get-Notification {

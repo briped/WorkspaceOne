@@ -32,7 +32,6 @@ MAC Address of the device
 Don't ask for confirmation, unless -Confirm is explicitly specified.
 
 .NOTES
-
 .EXAMPLE
 #>
 function Install-PurchasedApp {

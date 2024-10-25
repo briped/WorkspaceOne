@@ -12,7 +12,6 @@ The filepath to the CliXML file containing the configuration.
 Returns the imported configuration.
 
 .NOTES
-.LINK
 .EXAMPLE
 #>
 function Import-ApiConfig {

@@ -5,13 +5,11 @@ Updates the application on devices.
 .DESCRIPTION
 Updates the application on devices having device based licenses for the application if an update is available.
 
-.NOTES
-[ base url: /API/mam , api version: 1 ]
-post /apps/purchased/{appId}
-
 .PARAMETER Id
 The application id.
-Required
+
+.NOTES
+.EXAMPLE
 #>
 function Update-PurchasedApp {
     [CmdletBinding(SupportsShouldProcess = $true)]

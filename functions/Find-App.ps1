@@ -5,88 +5,61 @@ Search and retrieve details for both internal and external applications or books
 .DESCRIPTION
 Searches for an application or book, given filters including type, name, category and organization group id. Returns a list of applications or books that match the criteria with details of each application/book.
 
-.NOTES
-Information or caveats about the function e.g. 'This function is not supported in Linux'
-
-get /apps/search
-[ base url: /API/mam , api version: 1 ]
-
-.PARAMETER type
-The Product Type - App or Book.
-query	string
-
-.PARAMETER applicationtype
-Type of the application. (Internal/Public).
-query	string
-
-.PARAMETER applicationname
+.PARAMETER Name
 Application Name.
-query	string
 
-.PARAMETER productComponentAppsOnly
+.PARAMETER MediaType
+The Product Type - App or Book.
+
+.PARAMETER StoreType
+Type of the application. (Internal/Public).
+
+.PARAMETER ProductComponentAppsOnly
 Request query to include apps added under Products Staging and Provisioning.
-query	string
 
-.PARAMETER category
+.PARAMETER Category
 The Application Category.
-query	string
 
-.PARAMETER bundleid
+.PARAMETER BundleId
 BundleId/PackageId.
-query	string
 
-.PARAMETER locationgroupid
+.PARAMETER LocationGroupId
 LocationGroup Identifier.
-query	string
 
-.PARAMETER model
+.PARAMETER Model
 Device Model.
-query	string
 
-.PARAMETER status
+.PARAMETER Status
 Application Status.
-query	string
 
-.PARAMETER platform
+.PARAMETER Platform
 The Application Platform.
-query	string
 
-.PARAMETER winapptype
+.PARAMETER WinAppType
 The application sub type for windows platforms.
-query	string
 
-.PARAMETER includeAppsFromChildOgs
+.PARAMETER Children
 Flag to indicate if apps from child og's should be included or not.
-query	boolean
 
-.PARAMETER IncludeAppsFromParentOgs
+.PARAMETER Parents
 Flag to indicate if apps from parent og's should be included or not.
-query	boolean
 
-.PARAMETER AppCommandTarget
-Application command Targets for Windows Desktop/MacOs.
-query	string
-
-.PARAMETER distinctApplicationsPerOg
+.PARAMETER Distinct
 Flag to indicate if distinct applications at an OG should be returned by the API. If two versions of an application have the same name, then the application with the greater version will be returned.
-query	boolean
 
-.PARAMETER excludeAssignedOrInstalledDeviceCount
+.PARAMETER ExcludeDeviceCount
 Flag to indicate if assigned or installed device counts for apps should be excluded or not.
-query	boolean
 
-.PARAMETER page
+.PARAMETER Page
 Page number.
-query	string
 
-.PARAMETER pagesize
+.PARAMETER PageSize
 Records per page.
-query	string
 
-.PARAMETER orderby
+.PARAMETER OrderBy
 Orderby column name.
-query	string
 
+.NOTES
 .LINK
 .EXAMPLE
 #>

@@ -5,57 +5,40 @@ Search and retrieve details for purchased applications.
 .DESCRIPTION
 Application details, its assignments, deployment parameters are displayed.
 
-.NOTES
-Information or caveats about the function e.g. 'This function is not supported in Linux'
-
-get /apps/purchased/search
-[ base url: /API/mam , api version: 1 ]
-
-.PARAMETER applicationname
+.PARAMETER Name
 Application Name, for example - AngryBirds.
-query	string
 
-.PARAMETER isassigned
+.PARAMETER Assigned
 Flag to indicate whether the app is assigned or not, for example - true.
-query	string
 
-.PARAMETER bundleid
+.PARAMETER BundleId
 BundleId/PackageId, for example - xyz.Angrybirds.com.
-query	string
 
-.PARAMETER locationgroupid
+.PARAMETER LocationGroupId
 LocationGroup Identifier, for example - 777.
-query	string
 
-.PARAMETER organizationgroupuuid
+.PARAMETER OrganizationGroupUuid
 OrganizationGroup Identifier.
-query	string
 
-.PARAMETER model
+.PARAMETER Model
 Device Model, for example - iPhone.
-query	string
 
-.PARAMETER status
+.PARAMETER Status
 Application Status, for example - Active.
-query	string
 
-.PARAMETER platform
+.PARAMETER Platform
 The Application Platform, for example - Apple.
-query	string
 
-.PARAMETER page
+.PARAMETER Page
 Specific page number to get. 0 based index.
-query	string
 
-.PARAMETER pagesize
+.PARAMETER PageSize
 Maximumm records per page. Default 500.
-query	string
 
-.PARAMETER orderby
+.PARAMETER OrderBy
 Orderby column name, for example - applicationname.
-query	string
 
-.LINK
+.NOTES
 .EXAMPLE
 #>
 function Find-PurchasedApp {
@@ -67,7 +50,7 @@ function Find-PurchasedApp {
         $Name
         ,
         [Parameter()]
-        [string]
+        [switch]
         $Assigned
         ,
         [Parameter()]
@@ -83,7 +66,6 @@ function Find-PurchasedApp {
         $OrganizationGroupUuid
         ,
         [Parameter()]
-        [ValidateSet('iPhone', 'iPad')]
         [string]
         $Model
         ,
@@ -130,6 +112,7 @@ function Find-PurchasedApp {
     $Splattributes = @{
         Uri = $Uri
         Method = 'GET'
+        Version = 1
     }
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
     $Response = Invoke-ApiRequest @Splattributes

@@ -1,7 +1,33 @@
+<#
+.SYNOPSIS
+Gets the authorization details.
+
+.DESCRIPTION
+Returns the authorization to be used in the header when accessing the API.
+
+.PARAMETER Uri
+The URL for which to authenticate against.
+
+.PARAMETER Credential
+PSCredential containing the username and password for Basic Auth.
+
+.PARAMETER Certificate
+The certificate (with private key) to use for Certificate Auth.
+
+.PARAMETER OAuthUrl
+The OAuth URL for authenticating using OAuth.
+
+.PARAMETER OAuthCredential
+PSCredential containing the Client ID (username) and Client Secret (password) for use with OAuth.
+
+.NOTES
+.EXAMPLE
+#>
 function Get-Authorization {
     [CmdletBinding(DefaultParameterSetName = 'Basic')]
     param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true
+                ,  ParameterSetName = 'Certificate')]
         [ValidateNotNullOrEmpty()]
         [Alias('ApiUrl')]
         [uri]
@@ -39,11 +65,8 @@ function Get-Authorization {
         }
         'Certificate' {
             Add-Type -AssemblyName System.Security
-            Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Uri: $($Uri)"
             $AbsolutePath = $Uri.AbsolutePath
-            Write-Verbose -Message "$($MyInvocation.MyCommand.Name): AbsolutePath: $($AbsolutePath)"
             $Bytes = [System.Text.Encoding]::UTF8.GetBytes($AbsolutePath)
-            Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Bytes: $($Bytes)"
             $ContentInfo = [System.Security.Cryptography.Pkcs.ContentInfo]::new($Bytes)
             $SignedCms = [System.Security.Cryptography.Pkcs.SignedCms]::new($ContentInfo, $true)
             $CmsSigner = [System.Security.Cryptography.Pkcs.CmsSigner]::new($Certificate)
@@ -58,7 +81,7 @@ function Get-Authorization {
             $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($OAuthCredential.Password)
             $OAuthClientId = $OAuthCredential.UserName
             $OAuthClientSecret = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
-            break
+            break #TODO Complete and test implementation
             # https://docs.omnissa.com/bundle/WorkspaceONE-UEM-Console-BasicsVSaaS/page/UsingUEMFunctionalityWithRESTAPI.html
             $Payload = @{
                 grant_type = 'client_credentials'

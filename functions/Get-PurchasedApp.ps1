@@ -8,23 +8,13 @@ Returns VPP licensed Application allocation details including info about orders 
 Get purchased application and assignment details
 Retrieve the details of a license-based purchased application and its assignments.
 
-.NOTES
-[ base url: /API/mam , api version: 1 ]
-get /apps/purchased/{applicationid}
-[ base url: /API/mam , api version: 2 ]
-get /apps/purchased/{uuid}
-
-.PARAMETER applicationid
-(required)
+.PARAMETER Id
 Application Id.
-path	integer
 
-.PARAMETER uuid
-(required)
-Purchased application's UUID(Required).
-path	string
+.PARAMETER Uuid
+Purchased application's UUID.
 
-.LINK
+.NOTES
 .EXAMPLE
 #>
 function Get-PurchasedApp {

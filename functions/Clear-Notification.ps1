@@ -5,23 +5,10 @@ Dismiss a notification.
 .DESCRIPTION
 Dismiss a notification using notification id passed in by the user.
 
-.NOTES
-Information or caveats about the function e.g. 'This function is not supported in Linux'
-
-Example Value:
-{
-    "Value": 1
-}
-
-Model:
-EntityId {
-    Value (integer, optional, read only)
-}
-
 .PARAMETER Id
 Notification ID
 
-.LINK
+.NOTES
 .EXAMPLE
 #>
 function Clear-Notification {
