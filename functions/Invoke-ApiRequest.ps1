@@ -54,31 +54,37 @@ function Invoke-ApiRequest {
         [string]
         $ContentType = 'application/json'
     )
-    $Authributes = @{
-        Uri = $Uri
-    }
+    Remove-Variable -Force -Name Authributes -ErrorAction SilentlyContinue
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Script:Config: $($Script:Config | ConvertTo-Json -Compress)"
     if (!$Script:Config) {
         Write-Error 'Missing configuration' -ErrorAction Stop
     }
     switch ($Script:Config.AuthenticationMethod) {
         'Basic' {
-            $Authributes.Credential = $Script:Config.Credential
+            $Authributes = @{
+                Credential = $Script:Config.Credential
+            }
             break
         }
         'Certificate' {
-            $Authributes.Certificate = $Script:Config.Certificate
+            $Authributes = @{
+                Uri = $Uri
+                Certificate = $Script:Config.Certificate
+            }
             break
         }
         'OAuth' {
-            $Authributes.OAuthUrl = $Script:Config.OAuthUrl
-            $Authributes.OAuthCredential = $Script:Config.OAuthCredential
+            $Authributes = @{
+                OAuthUrl = $Script:Config.OAuthUrl
+                OAuthCredential = $Script:Config.OAuthCredential
+            }
             break
         }
         Default {
             Write-Error -Message "Unknown authentication method: $($Script:Config.AuthenticationMethod)"
         }
     }
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Get-Authorization $($Authributes | ConvertTo-Json -Compress)"
     $Authorization = Get-Authorization @Authributes
 
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Script:Config.ApiKey)
