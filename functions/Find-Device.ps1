@@ -140,7 +140,7 @@ v4
 
 .EXAMPLE
 #>
-function Find-DeviceV1 {
+function Find-Device {
     [CmdletBinding()]
     param(
         [Parameter()]
