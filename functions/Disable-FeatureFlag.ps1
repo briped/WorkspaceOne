@@ -5,11 +5,11 @@ Disables feature flag
 .DESCRIPTION
 Sets the specified Feature Flag to false for the specified organization group ID.
 
-.PARAMETER Flag
+.PARAMETER FeatureFlag
 The Feature Flag to disable.
 
-.PARAMETER OrganizationGroupId
-The organization group ID.
+.PARAMETER OrganizationGroupUuid
+The organization group UUID.
 
 .NOTES
 #>
@@ -17,12 +17,14 @@ function Disable-FeatureFlag {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
         [Parameter(Mandatory = $true)]
-        [int]
-        $Flag
+        [Alias('Feature', 'Flag')]
+        [string]
+        $FeatureFlag
         ,
         [Parameter(Mandatory = $true)]
-        [int]
-        $OrganizationGroupId
+        [Alias('UUID')]
+        [string]
+        $OrganizationGroupUuid
         ,
         [Parameter()]
         [switch]
@@ -31,8 +33,8 @@ function Disable-FeatureFlag {
     if ($Force -and !$Confirm) {
         $ConfirmPreference = 'None'
     }
-    $Uri = "$($Config.ApiUrl)/mdm/system/featureflag/$($Flag)/$($OrganizationGroupId)/false"
-    if ($PSCmdlet.ShouldProcess("Setting $($Flag) to TRUE for organization id '$($OrganizationGroupId)'.")) {
+    $Uri = "$($Config.ApiUrl)/mdm/system/featureflag/$($FeatureFlag)/$($OrganizationGroupUuid)/false"
+    if ($PSCmdlet.ShouldProcess("Setting $($FeatureFlag) to TRUE for organization UUID '$($OrganizationGroupUuid)'.")) {
         $Splattributes = @{
             Uri = $Uri
             Method = 'GET'
