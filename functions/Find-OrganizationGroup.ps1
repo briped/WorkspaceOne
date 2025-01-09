@@ -84,7 +84,7 @@ function Find-OrganizationGroup {
         Method = 'GET'
         Version = 2
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes)"
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
     $Response = Invoke-ApiRequest @Splattributes
-    $Response.LocationGroups
+    $Response.OrganizationGroups
 }
