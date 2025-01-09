@@ -104,7 +104,7 @@ function Find-SmartGroup {
         Method = 'GET'
         Version = 1
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes)"
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
     $Response = Invoke-ApiRequest @Splattributes
     $Response.SmartGroups
 }

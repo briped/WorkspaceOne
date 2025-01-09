@@ -145,6 +145,7 @@ function Find-DeviceV1 {
         Uri = $Uri
         Method = 'GET'
     }
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
     $Response = Invoke-ApiRequest @Splattributes
     $Response.Devices
 }

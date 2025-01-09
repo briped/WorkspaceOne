@@ -135,6 +135,7 @@ function Find-User {
         $Query += "$($k)=$([uri]::EscapeDataString($Data[$k]))"
     }
     if ($Query.Count -gt 0) { $Splattributes.Uri = "$($Uri)?$($Query -join '&')" }
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
     $Response = Invoke-ApiRequest @Splattributes
     if ($Version -eq 1) {
         $Response.Users
