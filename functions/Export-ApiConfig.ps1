@@ -25,10 +25,11 @@ function Export-ApiConfig {
     if (!$Path -or !(Test-Path -Path $Path -PathType Leaf -ErrorAction SilentlyContinue)) {
         Add-Type -AssemblyName System.Windows.Forms
         $FileBrowser = New-Object -TypeName System.Windows.Forms.SaveFileDialog
-        $FileBrowser.InitialDirectory = $OSEnv.Host
+        $FileBrowser.InitialDirectory = $OSEnv.Home
         $FileBrowser.FileName = ".ws1config_$($OSEnv.UserHost).xml"
         $FileBrowser.Filter = 'Common Language Infrastructure eXensible Markup Language (*.xml)|*.xml|All files (*.*)|*.*'
-        $FileBrowser.ShowDialog() | Out-Null
+        $DialogResult = $FileBrowser.ShowDialog()
+        if ($DialogResult -ne 'OK') { return }
         $Path = [System.IO.FileInfo]$FileBrowser.FileName
     }
     $Script:Config | Export-Clixml -Path $Path.FullName
