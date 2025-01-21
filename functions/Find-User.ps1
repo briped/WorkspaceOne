@@ -88,7 +88,7 @@ function Find-User {
         $PageSize
         ,
         [Parameter(ParameterSetName = 'V1')]
-        #[ValidateSet('LastSeen', 'Ownership', 'Platform', 'DeviceId')]
+        [ValidateSet('UserName', 'EmailAddress', 'FirstName', 'LastName', 'Name')]
         [string]
         $OrderBy
         ,
@@ -111,7 +111,12 @@ function Find-User {
     $Data = @{}
     switch ($PSCmdlet.ParameterSetName) {
         'V1' {
-            if ($LocationGroupId) { $Data.lgid = $LocationGroupId }
+            if ($UserName) { $Data.username = $UserName }
+            if ($FirstName) { $Data.firstname = $FirstName }
+            if ($LastName) { $Data.lastname = $LastName }
+            if ($Email) { $Data.email = $Email }
+            if ($Role) { $Data.role = $Role }
+            if ($LocationGroupId) { $Data.locationgroupid = $LocationGroupId }
             if ($Page -and $Page -gt 0) { $Data.page = $Page }
             if ($PageSize -and $PageSize -gt 0) { $Data.pagesize = $PageSize }
             if ($OrderBy) { $Data.orderby = $OrderBy }
@@ -124,17 +129,18 @@ function Find-User {
             $Version = 2
         }
     }
+    $UriQuery = @()
+    foreach ($k in $Data.Keys) {
+        $UriQuery += "$($k)=$([uri]::EscapeDataString($Data[$k]))"
+    }
+    if ($UriQuery.Count -gt 0) { $Uri = "$($Uri)?$($UriQuery -join '&')" }
 
     $Splattributes = @{
         Uri = $Uri
         Method = 'GET'
         Version = $Version
     }
-    $Query = @()
-    foreach ($k in $Data.Keys) {
-        $Query += "$($k)=$([uri]::EscapeDataString($Data[$k]))"
-    }
-    if ($Query.Count -gt 0) { $Splattributes.Uri = "$($Uri)?$($Query -join '&')" }
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
     $Response = Invoke-ApiRequest @Splattributes
     if ($Version -eq 1) {
         $Response.Users
