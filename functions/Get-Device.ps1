@@ -65,6 +65,6 @@ function Get-Device {
         Method = 'GET'
         Version = $ApiVersion
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes)"
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
     Invoke-ApiRequest @Splattributes
 }

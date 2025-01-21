@@ -53,7 +53,6 @@ function Get-OrganizationGroup {
         Method = 'GET'
         Version = $ApiVersion
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes)"
-    $Response = Invoke-ApiRequest @Splattributes
-    $Response.LocationGroups
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
+    Invoke-ApiRequest @Splattributes
 }
