@@ -1,4 +1,2 @@
-## Workspace ONE
-PowerShell Module for managing Workspace ONE.
-
-This is still work in progress. Adding functionality as I need it.
+# Workspace ONE
+This is a repository of Workspace ONE related scripts and documents.
