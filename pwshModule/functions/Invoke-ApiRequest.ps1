@@ -1,29 +1,3 @@
-<#
-.SYNOPSIS
-Invoke a REST API call against the Workspace ONE API.
-
-.DESCRIPTION
-Adds the proper authentication headers and calls the Workspace ONE API using the specified parameters.
-
-.PARAMETER Uri
-The API URL to call.
-
-.PARAMETER Method
-The HTTP method to use.
-
-.PARAMETER Body
-The API payload/body.
-
-.PARAMETER Version
-The API Version to use.
-
-.PARAMETER ContentType
-The content type to use. 
-Default: application/json
-
-.NOTES
-.EXAMPLE
-#>
 function Invoke-ApiRequest {
     [CmdletBinding()]
     param(
@@ -106,4 +80,30 @@ function Invoke-ApiRequest {
     }
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-RestMethod $($Splattributes | ConvertTo-Json -Compress)"
     Invoke-RestMethod @Splattributes
+    <#
+    .SYNOPSIS
+    Invoke a REST API call against the Workspace ONE API.
+
+    .DESCRIPTION
+    Adds the proper authentication headers and calls the Workspace ONE API using the specified parameters.
+
+    .PARAMETER Uri
+    The API URL to call.
+
+    .PARAMETER Method
+    The HTTP method to use.
+
+    .PARAMETER Body
+    The API payload/body.
+
+    .PARAMETER Version
+    The API Version to use.
+
+    .PARAMETER ContentType
+    The content type to use. 
+    Default: application/json
+
+    .NOTES
+    .EXAMPLE
+    #>
 }

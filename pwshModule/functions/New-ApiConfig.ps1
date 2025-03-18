@@ -1,45 +1,3 @@
-<#
-.SYNOPSIS
-Initiates a new API configuration.
-
-.DESCRIPTION
-Initiates a new API configuration for logging into the specified Workspace ONE tenants API.
-
-.PARAMETER Uri
-The base uri for the API, i.e. https://host.domain.tld/API
-
-.PARAMETER Key
-The API key for accessing the API.
-
-.PARAMETER Method
-Specifies the authentication method; Basic, Certificate, or OAuth.
-Default: Basic
-
-.PARAMETER Credential
-PSCredential for logging in using Basic Auth.
-Required if Method is set to Basic.
-
-.PARAMETER Certificate
-The certificate used for certificate based authentication.
-Required if method is set to Certificate.
-
-.PARAMETER OAuthUrl
-The OAuth URL for logging in using OAuth, i.e. 'https://emea.uemauth.vmwservices.com/connect/token'
-
-.PARAMETER OAuthCredential
-PSCredential containing the OAuth Client ID (username) and OAuth Client Secret (password).
-
-.PARAMETER PassThru
-Returns the resulting configuration.
-
-.NOTES
-I will most likely rewrite some of the logic and remove the Method parameter, as the method is 
-implied depending on whether a certificate, a credential or an OAuth uri have been specified, as
-they are mutually exclusive.
-
-.LINK
-.EXAMPLE
-#>
 function New-ApiConfig {
     [CmdletBinding(DefaultParameterSetName = 'Basic')]
     param(
@@ -132,4 +90,46 @@ function New-ApiConfig {
     }
     $Script:Config = New-Object -TypeName PSCustomObject -Property $ConfigTable
     if ($PassThru) { $Script:Config }
+    <#
+    .SYNOPSIS
+    Initiates a new API configuration.
+
+    .DESCRIPTION
+    Initiates a new API configuration for logging into the specified Workspace ONE tenants API.
+
+    .PARAMETER Uri
+    The base uri for the API, i.e. https://host.domain.tld/API
+
+    .PARAMETER Key
+    The API key for accessing the API.
+
+    .PARAMETER Method
+    Specifies the authentication method; Basic, Certificate, or OAuth.
+    Default: Basic
+
+    .PARAMETER Credential
+    PSCredential for logging in using Basic Auth.
+    Required if Method is set to Basic.
+
+    .PARAMETER Certificate
+    The certificate used for certificate based authentication.
+    Required if method is set to Certificate.
+
+    .PARAMETER OAuthUrl
+    The OAuth URL for logging in using OAuth, i.e. 'https://emea.uemauth.vmwservices.com/connect/token'
+
+    .PARAMETER OAuthCredential
+    PSCredential containing the OAuth Client ID (username) and OAuth Client Secret (password).
+
+    .PARAMETER PassThru
+    Returns the resulting configuration.
+
+    .NOTES
+    I will most likely rewrite some of the logic and remove the Method parameter, as the method is 
+    implied depending on whether a certificate, a credential or an OAuth uri have been specified, as
+    they are mutually exclusive.
+
+    .LINK
+    .EXAMPLE
+    #>
 }
