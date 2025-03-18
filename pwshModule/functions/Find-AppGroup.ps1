@@ -1,35 +1,3 @@
-<#
-.SYNOPSIS
-Searches for the Application Groups based on the query information provided.
-
-.DESCRIPTION
-Takes in query parameters to perform a search on the available Application Groups.
-
-.PARAMETER Name
-App Group name. Example = "Apple MDM Applications".
-
-.PARAMETER Type
-Application group type [Whitelist, Blacklist, Required, MDMApplication, COPEAllowlist, COPEDenylist].
-
-.PARAMETER OrganizationGroupId
-OrganizationGroup Id. Example = "7".
-
-.PARAMETER Platform
-The Application Platform. Example = "Android".
-
-.PARAMETER Page
-Page number.
-
-.PARAMETER PageSize
-Records per page.
-
-.PARAMETER OrderBy
-Orderby column name. Example = "ApplicationCount".
-
-.NOTES
-.LINK
-.EXAMPLE
-#>
 function Find-AppGroup {
     [CmdletBinding()]
     param(
@@ -87,4 +55,36 @@ function Find-AppGroup {
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
     $Response = Invoke-ApiRequest @Splattributes
     $Response.AppGroups
+    <#
+    .SYNOPSIS
+    Searches for the Application Groups based on the query information provided.
+
+    .DESCRIPTION
+    Takes in query parameters to perform a search on the available Application Groups.
+
+    .PARAMETER Name
+    App Group name. Example = "Apple MDM Applications".
+
+    .PARAMETER Type
+    Application group type [Whitelist, Blacklist, Required, MDMApplication, COPEAllowlist, COPEDenylist].
+
+    .PARAMETER OrganizationGroupId
+    OrganizationGroup Id. Example = "7".
+
+    .PARAMETER Platform
+    The Application Platform. Example = "Android".
+
+    .PARAMETER Page
+    Page number.
+
+    .PARAMETER PageSize
+    Records per page.
+
+    .PARAMETER OrderBy
+    Orderby column name. Example = "ApplicationCount".
+
+    .NOTES
+    .LINK
+    .EXAMPLE
+    #>
 }

@@ -1,28 +1,3 @@
-<#
-.SYNOPSIS
-Retrieves the Smart Group Details.
-
-.DESCRIPTION
-Retrieves all the Smart Group details like ( Name, Id, RootLocationGroup, Devices Assigned,list of Users/User Groups etc.) from the Smart Group Identifier.
-
-.PARAMETER Id
-The SmartGroup Identifier.
-
-.PARAMETER Apps
-Get List of Apps assigned to the Smart Group based on Smart Group Identifier.
-
-.PARAMETER Devices
-Retrieves the list of all devices with their respective details (such as DeviceId, Model, OS Version, Platform and Ownership) which belongs to a specific SmartGroup based on Smart Group Identifier.
-
-.PARAMETER SeenAfter
-Filters the devices in the smart group seen after the SeenAfter datetime.
-
-.PARAMETER SeenBefore
-Filters the devices in the smart group seen before the SeenBefore datetime.
-
-.NOTES
-.EXAMPLE
-#>
 function Get-SmartGroup {
     [CmdletBinding(DefaultParameterSetName = 'Devices')]
     param(
@@ -75,4 +50,29 @@ function Get-SmartGroup {
     else {
         $Response
     }
+    <#
+    .SYNOPSIS
+    Retrieves the Smart Group Details.
+
+    .DESCRIPTION
+    Retrieves all the Smart Group details like ( Name, Id, RootLocationGroup, Devices Assigned,list of Users/User Groups etc.) from the Smart Group Identifier.
+
+    .PARAMETER Id
+    The SmartGroup Identifier.
+
+    .PARAMETER Apps
+    Get List of Apps assigned to the Smart Group based on Smart Group Identifier.
+
+    .PARAMETER Devices
+    Retrieves the list of all devices with their respective details (such as DeviceId, Model, OS Version, Platform and Ownership) which belongs to a specific SmartGroup based on Smart Group Identifier.
+
+    .PARAMETER SeenAfter
+    Filters the devices in the smart group seen after the SeenAfter datetime.
+
+    .PARAMETER SeenBefore
+    Filters the devices in the smart group seen before the SeenBefore datetime.
+
+    .NOTES
+    .EXAMPLE
+    #>
 }

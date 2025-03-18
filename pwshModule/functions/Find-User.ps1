@@ -1,47 +1,3 @@
-<#
-.SYNOPSIS
-Search of the enrollment users.
-
-.DESCRIPTION
-Search for the enrollment users based on search criteria. FirstName, LastName, Email, LocationGroupID, Role, UserName can be used to search the enrollment users.
-Paging is supported together with page number and page size.
-Sorting is supported together with order by and sort order.
-Supported keywords for sorting are UserName, EmailAddress, FirstName, LastName, Name - Sorts by Organization Group Name, Active, EnrollmentUserID.
-A list of enrollment users will be present once the call is complete.
-
-.PARAMETER UserName
-The enrollment user username to search for.
-
-.PARAMETER FirstName
-The enrollment user first name to search for.
-
-.PARAMETER LastName
-The enrollment user last name to search for.
-
-.PARAMETER Email
-The enrollment user email address to search for.
-
-.PARAMETER Role
-The enrollment user role to search for.
-
-.PARAMETER LocationGroupId
-The enrollment user location group id to search for.
-
-.PARAMETER Page
-Filters search result to return results based on page number. Page numbering is 0 based and omitting this parameter will return the first page.
-
-.PARAMETER PageSize
-Limits the number of search results per page. Defaults to 500.
-
-.PARAMETER OrderBy
-Sort results based on given field. One of model, lastseen, ownership, platform, deviceid etc. Defaults to deviceid.
-
-.PARAMETER SortOrder
-Sort order of results. One of ASC or DESC. Defaults to ASC.
-
-.NOTES
-.EXAMPLE
-#>
 function Find-User {
     [CmdletBinding(DefaultParameterSetName = 'V1')]
     param(
@@ -148,4 +104,48 @@ function Find-User {
     else {
         $Response
     }
+    <#
+    .SYNOPSIS
+    Search of the enrollment users.
+
+    .DESCRIPTION
+    Search for the enrollment users based on search criteria. FirstName, LastName, Email, LocationGroupID, Role, UserName can be used to search the enrollment users.
+    Paging is supported together with page number and page size.
+    Sorting is supported together with order by and sort order.
+    Supported keywords for sorting are UserName, EmailAddress, FirstName, LastName, Name - Sorts by Organization Group Name, Active, EnrollmentUserID.
+    A list of enrollment users will be present once the call is complete.
+
+    .PARAMETER UserName
+    The enrollment user username to search for.
+
+    .PARAMETER FirstName
+    The enrollment user first name to search for.
+
+    .PARAMETER LastName
+    The enrollment user last name to search for.
+
+    .PARAMETER Email
+    The enrollment user email address to search for.
+
+    .PARAMETER Role
+    The enrollment user role to search for.
+
+    .PARAMETER LocationGroupId
+    The enrollment user location group id to search for.
+
+    .PARAMETER Page
+    Filters search result to return results based on page number. Page numbering is 0 based and omitting this parameter will return the first page.
+
+    .PARAMETER PageSize
+    Limits the number of search results per page. Defaults to 500.
+
+    .PARAMETER OrderBy
+    Sort results based on given field. One of model, lastseen, ownership, platform, deviceid etc. Defaults to deviceid.
+
+    .PARAMETER SortOrder
+    Sort order of results. One of ASC or DESC. Defaults to ASC.
+
+    .NOTES
+    .EXAMPLE
+    #>
 }

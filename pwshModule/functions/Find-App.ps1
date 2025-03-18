@@ -1,68 +1,3 @@
-<#
-.SYNOPSIS
-Search and retrieve details for both internal and external applications or books
-
-.DESCRIPTION
-Searches for an application or book, given filters including type, name, category and organization group id. Returns a list of applications or books that match the criteria with details of each application/book.
-
-.PARAMETER Name
-Application Name.
-
-.PARAMETER MediaType
-The Product Type - App or Book.
-
-.PARAMETER StoreType
-Type of the application. (Internal/Public).
-
-.PARAMETER ProductComponentAppsOnly
-Request query to include apps added under Products Staging and Provisioning.
-
-.PARAMETER Category
-The Application Category.
-
-.PARAMETER BundleId
-BundleId/PackageId.
-
-.PARAMETER LocationGroupId
-LocationGroup Identifier.
-
-.PARAMETER Model
-Device Model.
-
-.PARAMETER Status
-Application Status.
-
-.PARAMETER Platform
-The Application Platform.
-
-.PARAMETER WinAppType
-The application sub type for windows platforms.
-
-.PARAMETER Children
-Flag to indicate if apps from child og's should be included or not.
-
-.PARAMETER Parents
-Flag to indicate if apps from parent og's should be included or not.
-
-.PARAMETER Distinct
-Flag to indicate if distinct applications at an OG should be returned by the API. If two versions of an application have the same name, then the application with the greater version will be returned.
-
-.PARAMETER ExcludeDeviceCount
-Flag to indicate if assigned or installed device counts for apps should be excluded or not.
-
-.PARAMETER Page
-Page number.
-
-.PARAMETER PageSize
-Records per page.
-
-.PARAMETER OrderBy
-Orderby column name.
-
-.NOTES
-.LINK
-.EXAMPLE
-#>
 function Find-App {
     [CmdletBinding()]
     param(
@@ -74,12 +9,12 @@ function Find-App {
         [Parameter()]
         [ValidateSet('Internal', 'Public')]
         [string]
-        $StoreType
+        $StoreType = 'Public'
         ,
         [Parameter()]
         [ValidateSet('App', 'Book')]
         [string]
-        $MediaType
+        $MediaType = 'App'
         ,
         [Parameter()]
         [string]
@@ -102,8 +37,9 @@ function Find-App {
         $Model
         ,
         [Parameter()]
+        [ValidateSet('Active', 'Inactive')]
         [string]
-        $Status
+        $Status = 'Active'
         ,
         [Parameter()]
         [string]
@@ -175,4 +111,69 @@ function Find-App {
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
     $Response = Invoke-ApiRequest @Splattributes
     $Response.Application
+    <#
+    .SYNOPSIS
+    Search and retrieve details for both internal and external applications or books
+
+    .DESCRIPTION
+    Searches for an application or book, given filters including type, name, category and organization group id. Returns a list of applications or books that match the criteria with details of each application/book.
+
+    .PARAMETER Name
+    Application Name.
+
+    .PARAMETER MediaType
+    The Product Type - App or Book.
+
+    .PARAMETER StoreType
+    Type of the application. (Internal/Public).
+
+    .PARAMETER ProductComponentAppsOnly
+    Request query to include apps added under Products Staging and Provisioning.
+
+    .PARAMETER Category
+    The Application Category.
+
+    .PARAMETER BundleId
+    BundleId/PackageId.
+
+    .PARAMETER LocationGroupId
+    LocationGroup Identifier.
+
+    .PARAMETER Model
+    Device Model.
+
+    .PARAMETER Status
+    Application Status.
+
+    .PARAMETER Platform
+    The Application Platform.
+
+    .PARAMETER WinAppType
+    The application sub type for windows platforms.
+
+    .PARAMETER Children
+    Flag to indicate if apps from child og's should be included or not.
+
+    .PARAMETER Parents
+    Flag to indicate if apps from parent og's should be included or not.
+
+    .PARAMETER Distinct
+    Flag to indicate if distinct applications at an OG should be returned by the API. If two versions of an application have the same name, then the application with the greater version will be returned.
+
+    .PARAMETER ExcludeDeviceCount
+    Flag to indicate if assigned or installed device counts for apps should be excluded or not.
+
+    .PARAMETER Page
+    Page number.
+
+    .PARAMETER PageSize
+    Records per page.
+
+    .PARAMETER OrderBy
+    Orderby column name.
+
+    .NOTES
+    .LINK
+    .EXAMPLE
+    #>
 }

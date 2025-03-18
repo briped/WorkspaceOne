@@ -1,25 +1,3 @@
-<#
-.SYNOPSIS
-Get device by identifier.
-
-.DESCRIPTION
-Gets details about a single device, as specified by the unique identifier.
-
-.PARAMETER Id
-The Device ID.
-
-.PARAMETER Udid
-The Unique Device Identifier.
-
-.PARAMETER Uuid
-The Universally Unique Identifier.
-
-.PARAMETER Version
-The API version to use.
-
-.NOTES
-.EXAMPLE
-#>
 function Get-Device {
     [CmdletBinding(DefaultParameterSetName = 'ID')]
     param(
@@ -67,4 +45,26 @@ function Get-Device {
     }
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
     Invoke-ApiRequest @Splattributes
+    <#
+    .SYNOPSIS
+    Get device by identifier.
+
+    .DESCRIPTION
+    Gets details about a single device, as specified by the unique identifier.
+
+    .PARAMETER Id
+    The Device ID.
+
+    .PARAMETER Udid
+    The Unique Device Identifier.
+
+    .PARAMETER Uuid
+    The Universally Unique Identifier.
+
+    .PARAMETER Version
+    The API version to use.
+
+    .NOTES
+    .EXAMPLE
+    #>
 }

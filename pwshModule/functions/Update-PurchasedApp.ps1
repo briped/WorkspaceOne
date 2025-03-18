@@ -1,16 +1,3 @@
-<#
-.SYNOPSIS
-Updates the application on devices.
-
-.DESCRIPTION
-Updates the application on devices having device based licenses for the application if an update is available.
-
-.PARAMETER Id
-The application id.
-
-.NOTES
-.EXAMPLE
-#>
 function Update-PurchasedApp {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
@@ -36,4 +23,17 @@ function Update-PurchasedApp {
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
         Invoke-ApiRequest @Splattributes
     }
+    <#
+    .SYNOPSIS
+    Updates the application on devices.
+
+    .DESCRIPTION
+    Updates the application on devices having device based licenses for the application if an update is available.
+
+    .PARAMETER Id
+    The application id.
+
+    .NOTES
+    .EXAMPLE
+    #>
 }

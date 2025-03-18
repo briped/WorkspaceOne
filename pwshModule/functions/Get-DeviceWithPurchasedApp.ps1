@@ -1,31 +1,3 @@
-<#
-.SYNOPSIS
-Provides a list of devices that have the specified purchased application installed or assigned.
-
-.DESCRIPTION
-Gets list of devices matching on the input query parameters values.
-
-.PARAMETER ApplicationId
-The application ID.
-Required.
-
-.PARAMETER Status
-Device assignment status - installed/assigned.
-Required
-
-.PARAMETER LocationGroupId
-The LocationGroup Identifier, for example - 777.
-
-.PARAMETER Page
-Specific page number to get. 0 based index.
-
-.PARAMETER PageSize
-Maximumm records per page.
-Default 500.
-
-.NOTES
-.EXAMPLE
-#>
 function Get-DeviceWithPurchasedApp {
     [CmdletBinding()]
     param(
@@ -71,4 +43,32 @@ function Get-DeviceWithPurchasedApp {
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
     $Response = Invoke-ApiRequest @Splattributes
     $Response.DeviceId
+    <#
+    .SYNOPSIS
+    Provides a list of devices that have the specified purchased application installed or assigned.
+
+    .DESCRIPTION
+    Gets list of devices matching on the input query parameters values.
+
+    .PARAMETER ApplicationId
+    The application ID.
+    Required.
+
+    .PARAMETER Status
+    Device assignment status - installed/assigned.
+    Required
+
+    .PARAMETER LocationGroupId
+    The LocationGroup Identifier, for example - 777.
+
+    .PARAMETER Page
+    Specific page number to get. 0 based index.
+
+    .PARAMETER PageSize
+    Maximumm records per page.
+    Default 500.
+
+    .NOTES
+    .EXAMPLE
+    #>
 }

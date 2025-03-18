@@ -1,39 +1,3 @@
-<#
-.SYNOPSIS
-Install the specified purchased application on the device
-
-.DESCRIPTION
-Install the specified purchased application on the device.
-
-.PARAMETER ApplicationId
-Id of the Application to be installed, for example - 123.
-Required
-
-.PARAMETER ApplicationUuid
-Unique Identifier for the purchased app to be installed on the device.
-Required
-
-.PARAMETER DeviceId
-Id of the device.
-
-.PARAMETER DeviceUuid
-The Universally Unique Identifier of the device.
-
-.PARAMETER DeviceUdid
-The Unique Device Identifier of the device.
-
-.PARAMETER SerialNumber
-The serial number reported by the device.
-
-.PARAMETER MacAddress
-MAC Address of the device
-
-.PARAMETER Force
-Don't ask for confirmation, unless -Confirm is explicitly specified.
-
-.NOTES
-.EXAMPLE
-#>
 function Install-PurchasedApp {
     [CmdletBinding(DefaultParameterSetName = 'ID'
                 ,  SupportsShouldProcess = $true)]
@@ -121,4 +85,40 @@ function Install-PurchasedApp {
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
         Invoke-ApiRequest @Splattributes
     }
+    <#
+    .SYNOPSIS
+    Install the specified purchased application on the device
+
+    .DESCRIPTION
+    Install the specified purchased application on the device.
+
+    .PARAMETER ApplicationId
+    Id of the Application to be installed, for example - 123.
+    Required
+
+    .PARAMETER ApplicationUuid
+    Unique Identifier for the purchased app to be installed on the device.
+    Required
+
+    .PARAMETER DeviceId
+    Id of the device.
+
+    .PARAMETER DeviceUuid
+    The Universally Unique Identifier of the device.
+
+    .PARAMETER DeviceUdid
+    The Unique Device Identifier of the device.
+
+    .PARAMETER SerialNumber
+    The serial number reported by the device.
+
+    .PARAMETER MacAddress
+    MAC Address of the device
+
+    .PARAMETER Force
+    Don't ask for confirmation, unless -Confirm is explicitly specified.
+
+    .NOTES
+    .EXAMPLE
+    #>
 }

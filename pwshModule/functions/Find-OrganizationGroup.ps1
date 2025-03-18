@@ -1,34 +1,3 @@
-<#
-.SYNOPSIS
-Searches for organization groups using the query information provided.
-
-.DESCRIPTION
-Search organization by the given parameter.
-
-.PARAMETER Name
-The OrganizationGroup name, such as "Global".
-
-.PARAMETER Type
-The OrganizationGroup type. (eg. "Container","Customer","Partner").
-
-.PARAMETER GroupId
-The organization group identifier[Activation code] to search for.[Exact match is performed for this attribute].
-
-.PARAMETER OrderBy
-Orders the results based on this attribute-value[Valid values are: Id/Name/GroupId/LocationGroupType].
-
-.PARAMETER Page
-Specific page number to get. 0 based index.
-
-.PARAMETER PageSize
-Maximum records per page. Default 500.
-
-.PARAMETER SortOrder
-Sorting order. Allowed values are ASC or DESC. Defaults to ASC if this attribute is not specified.
-
-.NOTES
-.EXAMPLE
-#>
 function Find-OrganizationGroup {
     [CmdletBinding()]
     param(
@@ -87,4 +56,35 @@ function Find-OrganizationGroup {
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
     $Response = Invoke-ApiRequest @Splattributes
     $Response.OrganizationGroups
+    <#
+    .SYNOPSIS
+    Searches for organization groups using the query information provided.
+
+    .DESCRIPTION
+    Search organization by the given parameter.
+
+    .PARAMETER Name
+    The OrganizationGroup name, such as "Global".
+
+    .PARAMETER Type
+    The OrganizationGroup type. (eg. "Container","Customer","Partner").
+
+    .PARAMETER GroupId
+    The organization group identifier[Activation code] to search for.[Exact match is performed for this attribute].
+
+    .PARAMETER OrderBy
+    Orders the results based on this attribute-value[Valid values are: Id/Name/GroupId/LocationGroupType].
+
+    .PARAMETER Page
+    Specific page number to get. 0 based index.
+
+    .PARAMETER PageSize
+    Maximum records per page. Default 500.
+
+    .PARAMETER SortOrder
+    Sorting order. Allowed values are ASC or DESC. Defaults to ASC if this attribute is not specified.
+
+    .NOTES
+    .EXAMPLE
+    #>
 }

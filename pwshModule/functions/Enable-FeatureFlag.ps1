@@ -1,19 +1,4 @@
-﻿<#
-.SYNOPSIS
-Enables feature flag
-
-.DESCRIPTION
-Sets the specified Feature Flag to true for the specified organization group ID.
-
-.PARAMETER FeatureFlag
-The Feature Flag to enable.
-
-.PARAMETER OrganizationGroupUuid
-The organization group UUID.
-
-.NOTES
-#>
-function Enable-FeatureFlag {
+﻿function Enable-FeatureFlag {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
         [Parameter(Mandatory = $true)]
@@ -43,4 +28,19 @@ function Enable-FeatureFlag {
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
         Invoke-ApiRequest @Splattributes
     }
+    <#
+    .SYNOPSIS
+    Enables feature flag
+
+    .DESCRIPTION
+    Sets the specified Feature Flag to true for the specified organization group ID.
+
+    .PARAMETER FeatureFlag
+    The Feature Flag to enable.
+
+    .PARAMETER OrganizationGroupUuid
+    The organization group UUID.
+
+    .NOTES
+    #>
 }

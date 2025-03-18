@@ -1,19 +1,3 @@
-<#
-.SYNOPSIS
-Retrieves lookup keys for a given organization group.
-
-.DESCRIPTION
-Retrieve all lookup value keys for the given organization group.
-
-.PARAMETER Uuid
-Represents the organization group to retrieve lookup value keys from.
-
-.PARAMETER Language
-The language code (Default en-US).
-
-.NOTES
-.EXAMPLE
-#>
 function Get-LookupField {
     [CmdletBinding()]
     param(
@@ -37,4 +21,20 @@ function Get-LookupField {
     }
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
     Invoke-ApiRequest @Splattributes
+    <#
+    .SYNOPSIS
+    Retrieves lookup keys for a given organization group.
+
+    .DESCRIPTION
+    Retrieve all lookup value keys for the given organization group.
+
+    .PARAMETER Uuid
+    Represents the organization group to retrieve lookup value keys from.
+
+    .PARAMETER Language
+    The language code (Default en-US).
+
+    .NOTES
+    .EXAMPLE
+    #>
 }

@@ -1,22 +1,3 @@
-<#
-.SYNOPSIS
-Retrieves information about the specified organization group.
-
-.DESCRIPTION
-Retrieves organization group by ID. If Organization group is not found, it will throw 404 error.
-
-.PARAMETER Id
-The OrganizationGroup Identifier.
-
-.PARAMETER Uuid
-Identifier for an organization group on which operation is to be executed.
-
-.PARAMETER Children
-Lists the Organization Group specified by the ID and all of its child Organization Groups. Users, administrators, and devices in the OG specified by the ID are broken down and listed underneath the Organization Group they are enrolled or created at.
-
-.NOTES
-.EXAMPLE
-#>
 function Get-OrganizationGroup {
     [CmdletBinding(DefaultParameterSetName = 'ID')]
     param(
@@ -55,4 +36,23 @@ function Get-OrganizationGroup {
     }
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
     Invoke-ApiRequest @Splattributes
+    <#
+    .SYNOPSIS
+    Retrieves information about the specified organization group.
+
+    .DESCRIPTION
+    Retrieves organization group by ID. If Organization group is not found, it will throw 404 error.
+
+    .PARAMETER Id
+    The OrganizationGroup Identifier.
+
+    .PARAMETER Uuid
+    Identifier for an organization group on which operation is to be executed.
+
+    .PARAMETER Children
+    Lists the Organization Group specified by the ID and all of its child Organization Groups. Users, administrators, and devices in the OG specified by the ID are broken down and listed underneath the Organization Group they are enrolled or created at.
+
+    .NOTES
+    .EXAMPLE
+    #>
 }

@@ -1,40 +1,3 @@
-<#
-.SYNOPSIS
-Remove the specified purchased application from the device.
-
-.DESCRIPTION
-Remove the specified purchased application from the device.
-
-.PARAMETER ApplicationId
-Id of the Application to be installed, for example - 123.
-Required
-
-.PARAMETER ApplicationUuid
-Unique Identifier for the purchased app to be installed on the device.
-Required
-
-.PARAMETER DeviceId
-Id of the device.
-
-.PARAMETER DeviceUuid
-The Universally Unique Identifier of the device.
-
-.PARAMETER DeviceUdid
-The Unique Device Identifier of the device.
-
-.PARAMETER SerialNumber
-The serial number reported by the device.
-
-.PARAMETER MacAddress
-MAC Address of the device
-
-.PARAMETER Force
-Don't ask for confirmation, unless -Confirm is explicitly specified.
-
-.NOTES
-
-.EXAMPLE
-#>
 function Uninstall-PurchasedAppV1 {
     [CmdletBinding(DefaultParameterSetName = 'ID'
                 ,  SupportsShouldProcess = $true)]
@@ -122,4 +85,41 @@ function Uninstall-PurchasedAppV1 {
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
         Invoke-ApiRequest @Splattributes
     }
+    <#
+    .SYNOPSIS
+    Remove the specified purchased application from the device.
+
+    .DESCRIPTION
+    Remove the specified purchased application from the device.
+
+    .PARAMETER ApplicationId
+    Id of the Application to be installed, for example - 123.
+    Required
+
+    .PARAMETER ApplicationUuid
+    Unique Identifier for the purchased app to be installed on the device.
+    Required
+
+    .PARAMETER DeviceId
+    Id of the device.
+
+    .PARAMETER DeviceUuid
+    The Universally Unique Identifier of the device.
+
+    .PARAMETER DeviceUdid
+    The Unique Device Identifier of the device.
+
+    .PARAMETER SerialNumber
+    The serial number reported by the device.
+
+    .PARAMETER MacAddress
+    MAC Address of the device
+
+    .PARAMETER Force
+    Don't ask for confirmation, unless -Confirm is explicitly specified.
+
+    .NOTES
+
+    .EXAMPLE
+    #>
 }

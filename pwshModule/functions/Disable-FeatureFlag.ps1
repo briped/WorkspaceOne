@@ -1,19 +1,4 @@
-﻿<#
-.SYNOPSIS
-Disables feature flag
-
-.DESCRIPTION
-Sets the specified Feature Flag to false for the specified organization group ID.
-
-.PARAMETER FeatureFlag
-The Feature Flag to disable.
-
-.PARAMETER OrganizationGroupUuid
-The organization group UUID.
-
-.NOTES
-#>
-function Disable-FeatureFlag {
+﻿function Disable-FeatureFlag {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
         [Parameter(Mandatory = $true)]
@@ -43,4 +28,19 @@ function Disable-FeatureFlag {
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
         Invoke-ApiRequest @Splattributes
     }
+    <#
+    .SYNOPSIS
+    Disables feature flag
+
+    .DESCRIPTION
+    Sets the specified Feature Flag to false for the specified organization group ID.
+
+    .PARAMETER FeatureFlag
+    The Feature Flag to disable.
+
+    .PARAMETER OrganizationGroupUuid
+    The organization group UUID.
+
+    .NOTES
+    #>
 }

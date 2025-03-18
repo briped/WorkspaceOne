@@ -1,25 +1,3 @@
-<#
-.SYNOPSIS
-Retrieves the list of notifications based on the core user.
-
-.DESCRIPTION
-This API is used to get a list of all the notifications created for a particular admin.
-
-.PARAMETER Page
-Start index for the list of fetched notifications.
-Default: 0
-
-.PARAMETER PageSize
-Number of notifications fetched per page.
-Default: 0
-
-.PARAMETER Status
-Option to fetch active/dismissed notifications.
-Default: Active
-
-.NOTES
-.EXAMPLE
-#>
 function Get-Notification {
     [CmdletBinding()]
     param(
@@ -54,4 +32,26 @@ function Get-Notification {
     }
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
     Invoke-ApiRequest @Splattributes
+    <#
+    .SYNOPSIS
+    Retrieves the list of notifications based on the core user.
+
+    .DESCRIPTION
+    This API is used to get a list of all the notifications created for a particular admin.
+
+    .PARAMETER Page
+    Start index for the list of fetched notifications.
+    Default: 0
+
+    .PARAMETER PageSize
+    Number of notifications fetched per page.
+    Default: 0
+
+    .PARAMETER Status
+    Option to fetch active/dismissed notifications.
+    Default: Active
+
+    .NOTES
+    .EXAMPLE
+    #>
 }

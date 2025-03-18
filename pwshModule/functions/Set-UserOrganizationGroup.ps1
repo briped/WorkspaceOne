@@ -1,21 +1,4 @@
-﻿<#
-.SYNOPSIS
-Change the organization group of the enrollment user.
-
-.DESCRIPTION
-Change the organization group of the enrollment user by enrollment user id. The organization group will be changed once the call is complete.
-
-.PARAMETER Id
-The enrollment user id.
-
-.PARAMETER OrganizationGroupId
-The new enrollment user organization group id (Required).
-
-.NOTES
-post /users/{id}/changelocationgroup
-[ base url: /API/system , api version: 1 ]
-#>
-function Set-UserOrganizationGroup {
+﻿function Set-UserOrganizationGroup {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
         [Parameter(Mandatory = $true)]
@@ -43,4 +26,21 @@ function Set-UserOrganizationGroup {
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
         Invoke-ApiRequest @Splattributes
     }
+    <#
+    .SYNOPSIS
+    Change the organization group of the enrollment user.
+
+    .DESCRIPTION
+    Change the organization group of the enrollment user by enrollment user id. The organization group will be changed once the call is complete.
+
+    .PARAMETER Id
+    The enrollment user id.
+
+    .PARAMETER OrganizationGroupId
+    The new enrollment user organization group id (Required).
+
+    .NOTES
+    post /users/{id}/changelocationgroup
+    [ base url: /API/system , api version: 1 ]
+    #>
 }

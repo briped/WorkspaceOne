@@ -1,22 +1,4 @@
-﻿<#
-.SYNOPSIS
-Changes the organization group to which the device identified by the alternate ID is assigned.
-
-.DESCRIPTION
-Processes the command to change organization group for the specific device using UUID. It will also check if device can be accessed or not.
-
-.PARAMETER Id
-Device alternate ID Formats = {Macaddress - 848506B900BA, Udid - 6bf0f04c73681fbecfc3eb4f13cbf05b, SerialNumber - LGH871c18f631a, ImeiNumber - 354833052322837}
-
-.PARAMETER IdType
-The alternate ID type Macaddress, Udid, Serialnumber, ImeiNumber
-
-.PARAMETER OrganizationGroupId
-The new organization group ID.
-
-.NOTES
-#>
-function Set-DeviceOrganizationGroup {
+﻿function Set-DeviceOrganizationGroup {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
         [Parameter(Mandatory = $true)]
@@ -60,4 +42,22 @@ function Set-DeviceOrganizationGroup {
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
         Invoke-ApiRequest @Splattributes
     }
+    <#
+    .SYNOPSIS
+    Changes the organization group to which the device identified by the alternate ID is assigned.
+
+    .DESCRIPTION
+    Processes the command to change organization group for the specific device using UUID. It will also check if device can be accessed or not.
+
+    .PARAMETER Id
+    Device alternate ID Formats = {Macaddress - 848506B900BA, Udid - 6bf0f04c73681fbecfc3eb4f13cbf05b, SerialNumber - LGH871c18f631a, ImeiNumber - 354833052322837}
+
+    .PARAMETER IdType
+    The alternate ID type Macaddress, Udid, Serialnumber, ImeiNumber
+
+    .PARAMETER OrganizationGroupId
+    The new organization group ID.
+
+    .NOTES
+    #>
 }

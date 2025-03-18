@@ -1,28 +1,3 @@
-<#
-.SYNOPSIS
-Gets the authorization details.
-
-.DESCRIPTION
-Returns the authorization to be used in the header when accessing the API.
-
-.PARAMETER Uri
-The URL for which to authenticate against.
-
-.PARAMETER Credential
-PSCredential containing the username and password for Basic Auth.
-
-.PARAMETER Certificate
-The certificate (with private key) to use for Certificate Auth.
-
-.PARAMETER OAuthUrl
-The OAuth URL for authenticating using OAuth.
-
-.PARAMETER OAuthCredential
-PSCredential containing the Client ID (username) and Client Secret (password) for use with OAuth.
-
-.NOTES
-.EXAMPLE
-#>
 function Get-Authorization {
     [CmdletBinding(DefaultParameterSetName = 'Basic')]
     param(
@@ -100,4 +75,29 @@ function Get-Authorization {
         }
     }
     $Authorization
+    <#
+    .SYNOPSIS
+    Gets the authorization details.
+
+    .DESCRIPTION
+    Returns the authorization to be used in the header when accessing the API.
+
+    .PARAMETER Uri
+    The URL for which to authenticate against.
+
+    .PARAMETER Credential
+    PSCredential containing the username and password for Basic Auth.
+
+    .PARAMETER Certificate
+    The certificate (with private key) to use for Certificate Auth.
+
+    .PARAMETER OAuthUrl
+    The OAuth URL for authenticating using OAuth.
+
+    .PARAMETER OAuthCredential
+    PSCredential containing the Client ID (username) and Client Secret (password) for use with OAuth.
+
+    .NOTES
+    .EXAMPLE
+    #>
 }

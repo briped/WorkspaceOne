@@ -1,16 +1,3 @@
-<#
-.SYNOPSIS
-Dismiss a notification.
-
-.DESCRIPTION
-Dismiss a notification using notification id passed in by the user.
-
-.PARAMETER Id
-Notification ID
-
-.NOTES
-.EXAMPLE
-#>
 function Clear-Notification {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
@@ -34,4 +21,17 @@ function Clear-Notification {
         Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
         Invoke-ApiRequest @Splattributes
     }
+    <#
+    .SYNOPSIS
+    Dismiss a notification.
+
+    .DESCRIPTION
+    Dismiss a notification using notification id passed in by the user.
+
+    .PARAMETER Id
+    Notification ID
+
+    .NOTES
+    .EXAMPLE
+    #>
 }

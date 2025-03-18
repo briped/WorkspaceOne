@@ -1,25 +1,3 @@
-<#
-.SYNOPSIS
-Get app details from Apple App Store.
-
-.DESCRIPTION
-Gets details about the specified app from the Apple App Store.
-
-.PARAMETER Uri
-The webaddress to the app in the Apple public App Store. F.ex.: 'https://apps.apple.com/us/app/angry-birds-2/id880047117'
-
-.PARAMETER Id
-The Id of the app on the Apple public App Store. F.ex.: 880047117
-
-.PARAMETER Country
-The two-letter country code of the desired Apple public App Store. F.ex.: US
-
-.EXAMPLE
-Get-AppStoreDetails -Uri 'https://apps.apple.com/us/app/angry-birds-2/id880047117'
-
-.EXAMPLE
-Get-AppStoreDetails -Country 'us' -Id 880047117
-#>
 function Get-AppStoreDetails {
     [CmdletBinding(DefaultParameterSetName = 'URL')]
     param(
@@ -64,17 +42,29 @@ function Get-AppStoreDetails {
     }
     $Response = Invoke-RestMethod @Splattributes
     $Response.results
+    <#
+    .SYNOPSIS
+    Get app details from Apple App Store.
+
+    .DESCRIPTION
+    Gets details about the specified app from the Apple App Store.
+
+    .PARAMETER Uri
+    The webaddress to the app in the Apple public App Store. F.ex.: 'https://apps.apple.com/us/app/angry-birds-2/id880047117'
+
+    .PARAMETER Id
+    The Id of the app on the Apple public App Store. F.ex.: 880047117
+
+    .PARAMETER Country
+    The two-letter country code of the desired Apple public App Store. F.ex.: US
+
+    .EXAMPLE
+    Get-AppStoreDetails -Uri 'https://apps.apple.com/us/app/angry-birds-2/id880047117'
+
+    .EXAMPLE
+    Get-AppStoreDetails -Country 'us' -Id 880047117
+    #>
 }
-<#
-.SYNOPSIS
-Helper function that returns all valid two-letter ISO region names.
-
-.DESCRIPTION
-Helper function that returns all valid two-letter ISO region names.
-
-.EXAMPLE
-TwoLetterISORegionNames
-#>
 function TwoLetterISORegionNames {
     $CultureTypes = [System.Globalization.CultureTypes]::SpecificCultures
     $CultureInfo = [System.Globalization.CultureInfo]::GetCultures($CultureTypes)
@@ -86,6 +76,16 @@ function TwoLetterISORegionNames {
         }
     }
     $TwoLetterISORegionNames | Sort-Object -Unique
+    <#
+    .SYNOPSIS
+    Helper function that returns all valid two-letter ISO region names.
+
+    .DESCRIPTION
+    Helper function that returns all valid two-letter ISO region names.
+
+    .EXAMPLE
+    TwoLetterISORegionNames
+    #>
 }
 Register-ArgumentCompleter -CommandName 'Get-AppStoreDetails' -ParameterName 'Country' -ScriptBlock {
     param($CommandName,$ParameterName,$WordToComplete,$CommandAST,$BoundParameters)

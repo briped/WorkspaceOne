@@ -1,38 +1,3 @@
-<#
-.SYNOPSIS
-Search User Groups.
-
-.DESCRIPTION
-Takes in query parameters to perform a search on the available User Groups.
-
-.PARAMETER Name
-Name of the group.
-
-.PARAMETER Type
-User Group Type.
-
-.PARAMETER SyncStatus
-Sync Status of the User Group.
-
-.PARAMETER MergeStatus
-Merge Status of the User Group.
-
-.PARAMETER OrganizationGroupId
-Organization Group Identifier.
-
-.PARAMETER Page
-Page number.
-
-.PARAMETER PageSize
-Records per page.
-
-.PARAMETER OrderBy
-Orderby column name. Example = "ApplicationCount".
-
-.NOTES
-.LINK
-.EXAMPLE
-#>
 function Find-UserGroup {
     [CmdletBinding()]
     param(
@@ -95,4 +60,39 @@ function Find-UserGroup {
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
     $Response = Invoke-ApiRequest @Splattributes
     $Response.ResultSet
+    <#
+    .SYNOPSIS
+    Search User Groups.
+
+    .DESCRIPTION
+    Takes in query parameters to perform a search on the available User Groups.
+
+    .PARAMETER Name
+    Name of the group.
+
+    .PARAMETER Type
+    User Group Type.
+
+    .PARAMETER SyncStatus
+    Sync Status of the User Group.
+
+    .PARAMETER MergeStatus
+    Merge Status of the User Group.
+
+    .PARAMETER OrganizationGroupId
+    Organization Group Identifier.
+
+    .PARAMETER Page
+    Page number.
+
+    .PARAMETER PageSize
+    Records per page.
+
+    .PARAMETER OrderBy
+    Orderby column name. Example = "ApplicationCount".
+
+    .NOTES
+    .LINK
+    .EXAMPLE
+    #>
 }

@@ -1,6 +1,6 @@
 ﻿<#PSScriptInfo
 .VERSION
-2025.02.21.0
+2025.2.21.0
 
 .GUID
 ebd1f179-cf89-4df0-bb9f-3835f335a714
@@ -28,7 +28,7 @@ https://github.com/briped/WorkspaceOne
 + Added logging
 * Fixes
 
-2025.02.21.0
+2025.2.21.0
 * Refactoring. Moving environment specific code to external files/scripts. (untested)
 #>
 <#

@@ -1,46 +1,3 @@
-<#
-.SYNOPSIS
-Search and retrieve details for purchased applications.
-
-.DESCRIPTION
-Application details, its assignments, deployment parameters are displayed.
-
-.PARAMETER Name
-Application Name, for example - AngryBirds.
-
-.PARAMETER Assigned
-Flag to indicate whether the app is assigned or not, for example - true.
-
-.PARAMETER BundleId
-BundleId/PackageId, for example - xyz.Angrybirds.com.
-
-.PARAMETER LocationGroupId
-LocationGroup Identifier, for example - 777.
-
-.PARAMETER OrganizationGroupUuid
-OrganizationGroup Identifier.
-
-.PARAMETER Model
-Device Model, for example - iPhone.
-
-.PARAMETER Status
-Application Status, for example - Active.
-
-.PARAMETER Platform
-The Application Platform, for example - Apple.
-
-.PARAMETER Page
-Specific page number to get. 0 based index.
-
-.PARAMETER PageSize
-Maximumm records per page. Default 500.
-
-.PARAMETER OrderBy
-Orderby column name, for example - applicationname.
-
-.NOTES
-.EXAMPLE
-#>
 function Find-PurchasedApp {
     [CmdletBinding()]
     param(
@@ -117,4 +74,47 @@ function Find-PurchasedApp {
     Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
     $Response = Invoke-ApiRequest @Splattributes
     $Response.Application
+    <#
+    .SYNOPSIS
+    Search and retrieve details for purchased applications.
+
+    .DESCRIPTION
+    Application details, its assignments, deployment parameters are displayed.
+
+    .PARAMETER Name
+    Application Name, for example - AngryBirds.
+
+    .PARAMETER Assigned
+    Flag to indicate whether the app is assigned or not, for example - true.
+
+    .PARAMETER BundleId
+    BundleId/PackageId, for example - xyz.Angrybirds.com.
+
+    .PARAMETER LocationGroupId
+    LocationGroup Identifier, for example - 777.
+
+    .PARAMETER OrganizationGroupUuid
+    OrganizationGroup Identifier.
+
+    .PARAMETER Model
+    Device Model, for example - iPhone.
+
+    .PARAMETER Status
+    Application Status, for example - Active.
+
+    .PARAMETER Platform
+    The Application Platform, for example - Apple.
+
+    .PARAMETER Page
+    Specific page number to get. 0 based index.
+
+    .PARAMETER PageSize
+    Maximumm records per page. Default 500.
+
+    .PARAMETER OrderBy
+    Orderby column name, for example - applicationname.
+
+    .NOTES
+    .EXAMPLE
+    #>
 }
