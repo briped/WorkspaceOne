@@ -12,7 +12,7 @@
 RootModule = 'WorkspaceOneShell.psm1'
 
 # Version number of this module.
-ModuleVersion = '2024.10.7.1'
+ModuleVersion = '2025.03.18.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
