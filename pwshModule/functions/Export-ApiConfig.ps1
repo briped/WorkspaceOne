@@ -1,17 +1,3 @@
-<#
-.SYNOPSIS
-Export API configuration.
-
-.DESCRIPTION
-Exports the API configuration to a CliXML file.
-
-.PARAMETER Path
-The filepath to the CliXML file containing the configuration.
-
-.NOTES
-.LINK
-.EXAMPLE
-#>
 function Export-ApiConfig {
     [CmdletBinding()]
     param(
@@ -33,5 +19,18 @@ function Export-ApiConfig {
         $Path = [System.IO.FileInfo]$FileBrowser.FileName
     }
     $Script:Config | Export-Clixml -Path $Path.FullName
-    return $Path
+    <#
+    .SYNOPSIS
+    Export API configuration.
+
+    .DESCRIPTION
+    Exports the API configuration to a CliXML file.
+
+    .PARAMETER Path
+    The filepath to the CliXML file containing the configuration.
+
+    .NOTES
+    .LINK
+    .EXAMPLE
+    #>
 }
