@@ -76,8 +76,8 @@ function Find-Device {
     if ($Platform -and $Version -in (3)) { $Data.device_type = $Platform }
     if ($Platform -and $Version -in (4)) { $Data.device_types = ($Platform -as [array]) }
 
-    if ($LastSeen -and $Version -in (1,2)) { $Data.lastseen = $LastSeen }
-    if ($LastSeen -and $Version -in (3)) { $Data.last_seen = $LastSeen }
+    if ($LastSeen -and $Version -in (1,2)) { $Data.lastseen = $LastSeen.ToString('yyyy-MM-dd') }
+    if ($LastSeen -and $Version -in (3)) { $Data.last_seen = $LastSeen.ToString('yyyy-MM-dd') }
 
     if ($Ownership -and $Version -in (1,2,3)) { $Data.ownership = $Ownership }
     if ($Ownership -and $Version -in (4)) { $Data.ownerships = ($Ownership -as [array]) }
@@ -88,8 +88,8 @@ function Find-Device {
     if ($Compliance -and $Version -in (1)) { $Data.compliantstatus = $Compliance }
     if ($Compliance -and $Version -in (2,3,4)) { $Data.compliance_status = $Compliance }
 
-    if ($SeenSince -and $Version -in (1)) { $Data.seensince = $SeenSince }
-    if ($SeenSince -and $Version -in (2,3)) { $Data.seen_since = $SeenSince }
+    if ($SeenSince -and $Version -in (1)) { $Data.seensince = $SeenSince.ToString('yyyy-MM-dd') }
+    if ($SeenSince -and $Version -in (2,3)) { $Data.seen_since = $SeenSince.ToString('yyyy-MM-dd') }
 
     if ($Page -and $Page -gt 0) { $Data.page = $Page }
 

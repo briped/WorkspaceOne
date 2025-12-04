@@ -69,17 +69,17 @@ function Invoke-ApiRequest {
         'aw-tenant-code' = $ApiKey
     }
 
-    $Splattributes = @{
+    $Attributes = @{
         Uri         = $Uri
         Method      = $Method
         ContentType = "application/json;version=$($Version)"
         Headers     = $Headers
     }
     if ($Body) {
-        $Splattributes.Body = $Body
+        $Attributes.Body = $Body
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-RestMethod $($Splattributes | ConvertTo-Json -Compress)"
-    Invoke-RestMethod @Splattributes
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-RestMethod $($Attributes | ConvertTo-Json -Compress)"
+    Invoke-RestMethod @Attributes
     <#
     .SYNOPSIS
     Invoke a REST API call against the Workspace ONE API.

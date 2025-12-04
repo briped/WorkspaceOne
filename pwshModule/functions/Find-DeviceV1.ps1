@@ -62,11 +62,11 @@ function Find-DeviceV1 {
     if ($User) { $Data.user = $User }
     if ($Model) { $Data.model = $Model }
     if ($Platform) { $Data.platform = $Platform }
-    if ($LastSeen) { $Data.lastseen = $LastSeen }
+    if ($LastSeen) { $Data.lastseen = $LastSeen.ToString('yyyy-MM-dd') }
     if ($Ownership) { $Data.ownership = $Ownership }
     if ($LocationGroupId) { $Data.lgid = $LocationGroupId }
     if ($Compliance) { $Data.compliantstatus = $Compliance }
-    if ($SeenSince) { $Data.seensince = $SeenSince }
+    if ($SeenSince) { $Data.seensince = $SeenSince.ToString('yyyy-MM-dd') }
     if ($Page -and $Page -gt 0) { $Data.page = $Page }
     if ($PageSize -and $PageSize -gt 0) { $Data.pagesize = $PageSize }
     if ($OrderBy) { $Data.orderby = $OrderBy }
