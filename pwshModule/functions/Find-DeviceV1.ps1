@@ -76,12 +76,12 @@ function Find-DeviceV1 {
         $Query += "$($k)=$([uri]::EscapeDataString($Data[$k]))"
     }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
-    $Splattributes = @{
+    $Attributes = @{
         Uri = $Uri
         Method = 'GET'
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
-    $Response = Invoke-ApiRequest @Splattributes
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress)"
+    $Response = Invoke-ApiRequest @Attributes
     $Response.Devices
     <#
     .SYNOPSIS
