@@ -22,13 +22,13 @@ function Get-User {
         }
     }
     $Uri = "$($Script:Config.ApiUrl)/system/users/$($Identifier)"
-    $Splattributes = @{
+    $Attributes = @{
         Uri = $Uri
         Method = 'GET'
         Version = $ApiVersion
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
-    $Response = Invoke-ApiRequest @Splattributes
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress)"
+    $Response = Invoke-ApiRequest @Attributes
     $Response
     <#
     .SYNOPSIS

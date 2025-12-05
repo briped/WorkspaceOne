@@ -20,13 +20,13 @@
     }
     $Uri = "$($Config.ApiUrl)/mdm/system/featureflag/$($FeatureFlag)/$($OrganizationGroupUuid)/false"
     if ($PSCmdlet.ShouldProcess("Setting $($FeatureFlag) to TRUE for organization UUID '$($OrganizationGroupUuid)'.")) {
-        $Splattributes = @{
+        $Attributes = @{
             Uri = $Uri
             Method = 'GET'
             Version = 1
         }
-        Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-        Invoke-ApiRequest @Splattributes
+        Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
+        Invoke-ApiRequest @Attributes
     }
     <#
     .SYNOPSIS

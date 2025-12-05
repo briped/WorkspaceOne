@@ -14,12 +14,12 @@ function Clear-Notification {
     }
     # TODO: Update the ShouldProcess text
     if ($PSCmdlet.ShouldProcess("Dismiss Notification ID '$($Id)'.")) {
-        $Splattributes = @{
+        $Attributes = @{
             Uri = "$($Config.ApiUrl)/system/notifications/$($Id)"
             Method = 'POST'
         }
-        Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-        Invoke-ApiRequest @Splattributes
+        Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress -Depth 5)
+        Invoke-ApiRequest @Attributes
     }
     <#
     .SYNOPSIS

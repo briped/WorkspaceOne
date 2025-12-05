@@ -52,13 +52,13 @@ function Find-UserGroup {
         $Query += "$($k)=$($Data[$k])"
     }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
-    $Splattributes = @{
+    $Attributes = @{
         Uri = $Uri
         Method = 'GET'
         Version = 1
     }
-    Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-    $Response = Invoke-ApiRequest @Splattributes
+    Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
+    $Response = Invoke-ApiRequest @Attributes
     $Response.ResultSet
     <#
     .SYNOPSIS

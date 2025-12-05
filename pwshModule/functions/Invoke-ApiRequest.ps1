@@ -29,7 +29,7 @@ function Invoke-ApiRequest {
         $ContentType = 'application/json'
     )
     Remove-Variable -Force -Name Authributes -ErrorAction SilentlyContinue
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Script:Config: $($Script:Config | ConvertTo-Json -Compress)"
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Script:Config: $($Script:Config | ConvertTo-Json -Compress -Depth 5)"
     if (!$Script:Config) {
         Write-Error 'Missing configuration' -ErrorAction Stop
     }
@@ -58,7 +58,7 @@ function Invoke-ApiRequest {
             Write-Error -Message "Unknown authentication method: $($Script:Config.AuthenticationMethod)"
         }
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Get-Authorization $($Authributes | ConvertTo-Json -Compress)"
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Get-Authorization $($Authributes | ConvertTo-Json -Compress -Depth 5)"
     $Authorization = Get-Authorization @Authributes
 
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Script:Config.ApiKey)
@@ -69,17 +69,17 @@ function Invoke-ApiRequest {
         'aw-tenant-code' = $ApiKey
     }
 
-    $Splattributes = @{
+    $Attributes = @{
         Uri         = $Uri
         Method      = $Method
         ContentType = "application/json;version=$($Version)"
         Headers     = $Headers
     }
     if ($Body) {
-        $Splattributes.Body = $Body
+        $Attributes.Body = $Body
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-RestMethod $($Splattributes | ConvertTo-Json -Compress)"
-    Invoke-RestMethod @Splattributes
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-RestMethod $($Attributes | ConvertTo-Json -Compress)"
+    Invoke-RestMethod @Attributes
     <#
     .SYNOPSIS
     Invoke a REST API call against the Workspace ONE API.

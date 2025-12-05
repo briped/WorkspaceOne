@@ -37,13 +37,13 @@ function Get-SmartGroup {
             if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
         }
     }
-    $Splattributes = @{
+    $Attributes = @{
         Uri = $Uri
         Method = 'GET'
         Version = 1
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
-    $Response = Invoke-ApiRequest @Splattributes
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress)"
+    $Response = Invoke-ApiRequest @Attributes
     if ($Devices) {
         $Response.Devices
     }

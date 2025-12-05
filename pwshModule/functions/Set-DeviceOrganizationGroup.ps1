@@ -34,13 +34,13 @@
     }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
     if ($PSCmdlet.ShouldProcess("Setting organizationgroup to '$($OrganizationGroupId)' for device '$($Id)'.")) {
-        $Splattributes = @{
+        $Attributes = @{
             Uri = $Uri
             Method = 'POST'
             Version = 1
         }
-        Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-        Invoke-ApiRequest @Splattributes
+        Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
+        Invoke-ApiRequest @Attributes
     }
     <#
     .SYNOPSIS

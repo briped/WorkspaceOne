@@ -36,12 +36,12 @@ function Get-DeviceWithPurchasedApp {
         $Query += "$($k)=$($Data[$k])"
     }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
-    $Splattributes = @{
+    $Attributes = @{
         Uri = $Uri
         Method = 'GET'
     }
-    Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-    $Response = Invoke-ApiRequest @Splattributes
+    Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
+    $Response = Invoke-ApiRequest @Attributes
     $Response.DeviceId
     <#
     .SYNOPSIS

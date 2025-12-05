@@ -15,13 +15,13 @@ function Update-PurchasedApp {
     }
     # TODO: Update the ShouldProcess text
     if ($PSCmdlet.ShouldProcess("Update Application ID '$($Id)' on devices.")) {
-        $Splattributes = @{
+        $Attributes = @{
             Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($Id)"
             Method = 'POST'
             Version = 1
         }
-        Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-        Invoke-ApiRequest @Splattributes
+        Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
+        Invoke-ApiRequest @Attributes
     }
     <#
     .SYNOPSIS

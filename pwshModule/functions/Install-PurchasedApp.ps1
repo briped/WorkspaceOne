@@ -76,14 +76,14 @@ function Install-PurchasedApp {
     $Body = ($Data | ConvertTo-Json -Compress)
     # TODO: Update the ShouldProcess text
     if ($PSCmdlet.ShouldProcess($Body, "Install Application ID '$($ApplicationIdentifier)'")) {
-        $Splattributes = @{
+        $Attributes = @{
             Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationIdentifier)/install"
             Method = 'POST'
             Body = $Body
             Version = $ApiVersion
         }
-        Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-        Invoke-ApiRequest @Splattributes
+        Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
+        Invoke-ApiRequest @Attributes
     }
     <#
     .SYNOPSIS

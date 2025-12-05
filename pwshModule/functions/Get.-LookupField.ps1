@@ -14,13 +14,13 @@ function Get-LookupField {
     )
     $Uri = "$($Config.ApiUrl)/system/lookup-value/keys/$($Uuid)"
     if ($Language) { $Uri += "?language=$($Language)" }
-    $Splattributes = @{
+    $Attributes = @{
         Uri = "$($Config.ApiUrl)/system/lookup-value/keys/$($Uuid)"
         Method = 'GET'
         Version = 1
     }
-    Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-    Invoke-ApiRequest @Splattributes
+    Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Retrieves lookup keys for a given organization group.

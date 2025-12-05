@@ -91,13 +91,13 @@ function Find-User {
     }
     if ($UriQuery.Count -gt 0) { $Uri = "$($Uri)?$($UriQuery -join '&')" }
 
-    $Splattributes = @{
+    $Attributes = @{
         Uri = $Uri
         Method = 'GET'
         Version = $Version
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
-    $Response = Invoke-ApiRequest @Splattributes
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress)"
+    $Response = Invoke-ApiRequest @Attributes
     if ($Version -eq 1) {
         $Response.Users
     }

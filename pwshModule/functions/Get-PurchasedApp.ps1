@@ -25,13 +25,13 @@ function Get-PurchasedApp {
             break
         }
     }
-    $Splattributes = @{
+    $Attributes = @{
         Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationIdentifier)"
         Method = 'GET'
         Version = $ApiVersion
     }
-    Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-    Invoke-ApiRequest @Splattributes
+    Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Returns VPP licensed Application allocation details by AppId.

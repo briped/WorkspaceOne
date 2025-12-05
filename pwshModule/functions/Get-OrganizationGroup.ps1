@@ -29,13 +29,13 @@ function Get-OrganizationGroup {
     }
     $Uri = "$($Script:Config.ApiUrl)/system/groups/$($Identifier)"
     if ($Children) { $Uri += '/children' }
-    $Splattributes = @{
+    $Attributes = @{
         Uri = $Uri
         Method = 'GET'
         Version = $ApiVersion
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
-    Invoke-ApiRequest @Splattributes
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress)"
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Retrieves information about the specified organization group.

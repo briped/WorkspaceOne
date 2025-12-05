@@ -29,18 +29,18 @@ function Get-AppStoreDetails {
             if ($Uri -notmatch "apps\.apple\.com/(?<Country>[^/]+)/.*/id(?<Id>\d+)(/|$)") {
                 throw "The '$($Uri)' is not a valid Apple AppStore URL."
             }
-            $Country = $Matches.Country.Towlower()
+            $Country = $Matches.Country.Tolower()
             $Id = $Matches.Id
             break
         }
     }
     Write-Verbose -Message "App URL: $($Uri)"
-    $Splattributes = @{
+    $Attributes = @{
         Method = 'GET'
         ContentType = 'application/json'
         Uri = "https://itunes.apple.com/lookup?id=$($Matches.Id)&country=$($Matches.Country)"
     }
-    $Response = Invoke-RestMethod @Splattributes
+    $Response = Invoke-RestMethod @Attributes
     $Response.results
     <#
     .SYNOPSIS

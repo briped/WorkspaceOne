@@ -76,14 +76,14 @@ function Uninstall-PurchasedAppV1 {
     $Body = ($Data | ConvertTo-Json -Compress)
     # TODO: Update the ShouldProcess text
     if ($PSCmdlet.ShouldProcess($Body, "Uninstall Application ID '$($ApplicationIdentifier)'")) {
-        $Splattributes = @{
+        $Attributes = @{
             Uri = "$($Config.ApiUrl)/mam/apps/purchased/$($ApplicationIdentifier)/uninstall"
             Method = 'POST'
             Body = ($Data | ConvertTo-Json -Compress)
             Version = $ApiVersion
         }
-        Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
-        Invoke-ApiRequest @Splattributes
+        Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
+        Invoke-ApiRequest @Attributes
     }
     <#
     .SYNOPSIS

@@ -7,12 +7,12 @@ function Find-AppleStoreApp {
     )
     $Uri = "$($Config.ApiUrl)/mam/apps/applestore/search"
     $Uri = "$($Uri)?appname=$([uri]::EscapeDataString($Name))"
-    $Splattributes = @{
+    $Attributes = @{
         Uri = $Uri
         Method = 'GET'
         Version = 1
     }
-    Write-Verbose -Message ($Splattributes | ConvertTo-Json -Compress)
+    Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
     Invoke-ApiRequest @Splattributes
     <#
     .SYNOPSIS

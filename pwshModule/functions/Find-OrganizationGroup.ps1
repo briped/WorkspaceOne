@@ -48,13 +48,13 @@ function Find-OrganizationGroup {
         $Query += "$($k)=$($Data[$k])"
     }
     if ($Query.Count -gt 0) { $Uri = "$($Uri)?$($Query -join '&')" }
-    $Splattributes = @{
+    $Attributes = @{
         Uri = $Uri
         Method = 'GET'
         Version = 2
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
-    $Response = Invoke-ApiRequest @Splattributes
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress -Depth 5)"
+    $Response = Invoke-ApiRequest @Attributes
     $Response.OrganizationGroups
     <#
     .SYNOPSIS

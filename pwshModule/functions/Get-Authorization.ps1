@@ -63,13 +63,13 @@ function Get-Authorization {
                 client_id = $OAuthClientId
                 client_secret = $OAuthClientSecret
             } | ConvertTo-Json -Compress
-            $Splattributes = @{
+            $Attributes = @{
                 Uri = $OAuthUrl
                 Method = 'POST'
                 ContentType = 'application/json'
                 Body = $Payload
             }
-            $Response = Invoke-RestMethod @Splattributes
+            $Response = Invoke-RestMethod @Attributes
             $Authorization = "Bearer $($Response.access_token)"
             break
         }

@@ -38,13 +38,13 @@ function Get-Device {
             $BaseUrl = "/mdm/devices/$($Identifier)"
         }
     }
-    $Splattributes = @{
+    $Attributes = @{
         Uri = "$($Config.ApiUrl)$($BaseUrl)"
         Method = 'GET'
         Version = $ApiVersion
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Splattributes | ConvertTo-Json -Compress)"
-    Invoke-ApiRequest @Splattributes
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress)"
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Get device by identifier.
