@@ -96,7 +96,8 @@ if ($null -ne $Org.Id -and $Org.Id.Count -ne 1) {
 Write-Verbose -Message "'Find-Ws1OrganizationGroup -Name $($OrganizationGroup)': $($Org | ConvertTo-Json -Compress)"
 foreach ($u in $User) {
     try {
-        $Device = Find-Ws1Device -User $u.Trim()
+        $Response = Find-Ws1Device -User $u.Trim()
+        $Device = $Response.Devices
     }
     catch {
         $LogMessage = "ERROR! Find-Ws1Device -User $($u). Error: $($_)"

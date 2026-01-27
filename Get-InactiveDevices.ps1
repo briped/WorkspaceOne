@@ -87,7 +87,8 @@ $Size = 500
 $InactiveDevices = @()
 do {
     # Find all devices that haven't been seen since the $InactiveDate and return $Size items per page, return pagenumber $Page.
-    $Devices = Find-Ws1Device -LastSeen $InactiveDate -PageSize $Size -Page $Page
+    $Response = Find-Ws1Device -LastSeen $InactiveDate -PageSize $Size -Page $Page
+    $Devices = $Response.Devices
     # Check each device if it should be excluded.
     # Add the found devices to the array with all found devices.
     $InactiveDevices += $Devices
