@@ -16,6 +16,12 @@ function Get-Device {
         [string]
         $Uuid
         ,
+        [Parameter(Mandatory = $true
+                ,  ParameterSetName = 'EASID')]
+        [Alias('ActiveSyncID', 'ExchangeActiveSyncID')]
+        [string]
+        $EasId
+        ,
         [Parameter(ParameterSetName = 'UUID')]
         [ValidateSet(2, 3)]
         [int]
@@ -36,6 +42,11 @@ function Get-Device {
             $Identifier = $Uuid
             $ApiVersion = $Version
             $BaseUrl = "/mdm/devices/$($Identifier)"
+        }
+        'EASID' {
+            $Identifier = $Uuid
+            $ApiVersion = 1
+            $BaseUrl = "/mdm/devices"
         }
     }
     $Attributes = @{
