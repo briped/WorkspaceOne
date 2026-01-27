@@ -1,6 +1,6 @@
 <#PSScriptInfo
 .VERSION
-2025.02.21.0
+2026.01.09.0
 
 .GUID
 4f5617a2-8c47-4968-b424-61ae0a1d1eb9
@@ -30,6 +30,9 @@ https://github.com/briped/WorkspaceOne
 
 2025.02.21.0
 * Refactoring. Moving environment specific code to external files/scripts. (untested)
+
+2026.01.09.0
+* Cleaned up some unused variables.
 #>
 <#
 .SYNOPSIS
@@ -84,7 +87,7 @@ foreach ($Api in $Config.API) {
     # Iterate through all VPP App Auto Update notifications.
     foreach ($Notification in $Notifications) {
         # Get the notificationdetails.
-        $NotificationTime = Get-Date -Date $Notification.GlobalizedCreatedOn
+        #$NotificationTime = Get-Date -Date $Notification.GlobalizedCreatedOn
         $NotificationData = $Notification.Data | ConvertFrom-Json
         # Check if auto update is enabled for the app.
         if ($NotificationData.IsAutoUpdateEnabled -ne $true) {
@@ -111,7 +114,7 @@ foreach ($Api in $Config.API) {
         # Loop through each device that already have the app installed and install the updated version.
         foreach ($DeviceId in $DeviceWithPurchasedApp) {
             try {
-                $void = Install-Ws1PurchasedApp -DeviceId $DeviceId -ApplicationId $NotificationData.AppIdentifier
+                Install-Ws1PurchasedApp -DeviceId $DeviceId -ApplicationId $NotificationData.AppIdentifier | Out-Null
             }
             catch {
                 $Device = Get-Ws1Device -Id $DeviceId
@@ -130,7 +133,7 @@ foreach ($Api in $Config.API) {
         }
         # Clear the notification.
         try {
-            $void = Clear-Ws1Notification -Id $Notification.id
+            Clear-Ws1Notification -Id $Notification.id | Out-Null
         }
         catch {
             $LogMessage = "An error occurred trying to clear the Notification ID '$($Notification.id)'."
@@ -151,7 +154,7 @@ foreach ($Api in $Config.API) {
         WriteLog -Message $LogMessage
         foreach ($r in $Retry) {
             try {
-                $void = Install-Ws1PurchasedApp -DeviceId $r.DeviceId -ApplicationId $AppId
+                Install-Ws1PurchasedApp -DeviceId $r.DeviceId -ApplicationId $AppId | Out-Null
             }
             catch {
                 $LogMessage = "Installation retry for '$($NotificationData.AppName)' with App ID '$($NotificationData.AppIdentifier)' on '$($Device.DeviceFriendlyName)' with Device ID '$($DeviceId)' failed again."

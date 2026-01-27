@@ -27,6 +27,11 @@ function Find-User {
         $Role
         ,
         [Parameter(ParameterSetName = 'V1')]
+        [ValidateSet('All', 'Active', 'InActive')]
+        [string]
+        $Status = 'All'
+        ,
+        [Parameter(ParameterSetName = 'V1')]
         [ValidateNotNullOrEmpty()]
         [int]
         $LocationGroupId
@@ -73,6 +78,7 @@ function Find-User {
             if ($Email) { $Data.email = $Email }
             if ($Role) { $Data.role = $Role }
             if ($LocationGroupId) { $Data.locationgroupid = $LocationGroupId }
+            if ($Status -ne 'All') { $Data.status = $Status }
             if ($Page -and $Page -gt 0) { $Data.page = $Page }
             if ($PageSize -and $PageSize -gt 0) { $Data.pagesize = $PageSize }
             if ($OrderBy) { $Data.orderby = $OrderBy }
@@ -130,8 +136,17 @@ function Find-User {
     .PARAMETER Role
     The enrollment user role to search for.
 
+    .PARAMETER Status
+    The admin status.
+
     .PARAMETER LocationGroupId
     The enrollment user location group id to search for.
+
+    .PARAMETER OrganizationGroupUuid
+    Location group uuid.
+
+    .PARAMETER Query
+    Search Text for filtering user.
 
     .PARAMETER Page
     Filters search result to return results based on page number. Page numbering is 0 based and omitting this parameter will return the first page.
