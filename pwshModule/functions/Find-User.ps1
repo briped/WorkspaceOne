@@ -98,12 +98,12 @@ function Find-User {
     }
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress)"
     $Response = Invoke-ApiRequest @Attributes
-    if ($Version -eq 1) {
-        $Response.Users
-    }
-    else {
+    #if ($Version -eq 1) {
+    #    $Response.Users
+    #}
+    #else {
         $Response
-    }
+    #}
     <#
     .SYNOPSIS
     Search of the enrollment users.
@@ -146,6 +146,8 @@ function Find-User {
     Sort order of results. One of ASC or DESC. Defaults to ASC.
 
     .NOTES
+    Changes:
+     * 2026-01-26: Changed from returning just users, to returning the full result, including total count.
     .EXAMPLE
     #>
 }
