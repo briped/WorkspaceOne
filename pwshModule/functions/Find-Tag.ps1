@@ -1,17 +1,17 @@
 function Find-Tag {
     [CmdletBinding()]
     param(
+        [Parameter(Mandatory = $true)]
+        [int]
+        $OrganizationGroupId
+        ,
         [Parameter()]
         [string]
         $Name
         ,
         [Parameter()]
         [int]
-        $OrganizationGroupId
-        ,
-        [Parameter()]
-        [int]
-        $TagTypeId
+        $TypeId
         ,
         [Parameter()]
         [Alias('Start', 'PageStart')]
@@ -25,15 +25,16 @@ function Find-Tag {
     )
     $Uri = "$($Config.ApiUrl)/mdm/tags/search"
     $Data = @{}
-    if ($OrganizationGroupId) { $Data.organizationgroupid = $OrganizationGroupId }
-    if ($TagTypeId) { $Data.tagtype = $TagTypeId }
+    $Data.organizationgroupid = $OrganizationGroupId
+    if ($Name) { $Data.name = $Name }
+    if ($TypeId) { $Data.tagtype = $TypeId }
     if ($Page -and $Page -gt 0) { $Data.page = $Page }
     if ($PageSize -and $PageSize -gt 0) { $Data.pagesize = $PageSize }
 
     $Attributes = @{
         Uri = $Uri
         Method = 'GET'
-        Version = $Version
+        Version = 1
     }
     $Query = @()
     foreach ($k in $Data.Keys) {
@@ -41,8 +42,7 @@ function Find-Tag {
     }
     if ($Query.Count -gt 0) { $Attributes.Uri = "$($Uri)?$($Query -join '&')" }
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress)"
-    $Response = Invoke-ApiRequest @Attributes
-    $Response
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Retrieve the list of tags based off name, organization group, tag type.
@@ -56,7 +56,7 @@ function Find-Tag {
     .PARAMETER OrganizationGroupId
     Organization group identifier
 
-    .PARAMETER TagTypeId
+    .PARAMETER TypeId
     Tag type id.
 
     .PARAMETER Page
