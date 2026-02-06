@@ -11,7 +11,7 @@ function Find-EnrollmentToken {
         ,
         [Parameter()]
         [string]
-        $IMEI
+        $Imei
         ,
         [Parameter()]
         [string]
@@ -20,6 +20,10 @@ function Find-EnrollmentToken {
         [Parameter()]
         [string]
         $EnrollmentStatus
+        ,
+        [Parameter()]
+        [string]
+        $DeviceType
         ,
         [Parameter()]
         [Alias('Start', 'PageStart')]
@@ -31,13 +35,19 @@ function Find-EnrollmentToken {
         [int]
         $PageSize
     )
-    $Uri = "$($Config.ApiUrl)/mdm/groups/$($OrganizationGroupUuid)/enrollment-tokens"
+    $Uri = "$($Config.ApiUrl)/mdm/groups/${OrganizationGroupUuid}/enrollment-tokens"
     $Data = @{}
+    if ($SerialNumber) { $Data.serial_number = $SerialNumber }
+    if ($Imei) { $Data.imei = $Imei }
+    if ($ComplianceStatus) { $Data.compliance_status = $ComplianceStatus }
+    if ($EnrollmentStatus) { $Data.enrollment_status = $EnrollmentStatus }
+    if ($DeviceType) { $Data.device_type = $DeviceType }
     if ($Page -and $Page -gt 0) { $Data.page = $Page }
-    if ($PageSize -and $PageSize -gt 0) { $Data.PageSize = $PageSize }
+    if ($PageSize -and $PageSize -gt 0) { $Data.page_size = $PageSize }
     $Attributes = @{
         Uri = $Uri
         Method = 'GET'
+        Version = 1
     }
     $Query = @()
     foreach ($k in $Data.Keys) {
@@ -45,8 +55,7 @@ function Find-EnrollmentToken {
     }
     if ($Query.Count -gt 0) { $Attributes.Uri = "$($Uri)?$($Query -join '&')" }
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress)"
-    $Response = Invoke-ApiRequest @Attributes
-    $Response.tokens
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Returns a list of enrollment tokens that match the search criteria
@@ -55,14 +64,37 @@ function Find-EnrollmentToken {
     Returns a list of enrollment tokens that match the search criteria
 
     .PARAMETER OrganizationGroupUuid
-    Organization Group UUID. (Example:FFD1521E-70D7-4673-A0EF-62938079C0E8, FFD1521E-70D7-4673-A0EF-62938079C0E8)
+    [string] Required
+    Uuid of the organization group to search in.
+
+    .PARAMETER SerialNumber
+    [uuid]
+    Serial number of the device.
+
+    .PARAMETER Imei
+    [string]
+    IMEI number of the device
+
+    .PARAMETER ComplianceStatus
+    [string]
+    Compliance status of registration.
+
+    .PARAMETER EnrollmentStatus
+    [string]
+    Enrollment status.
+
+    .PARAMETER DeviceType
+    [string]
+    Device type (Platform).
 
     .PARAMETER Page
     Filters search result to return results based on page number. Page numbering is 0 based and omitting this parameter will return the first page.
 
     .PARAMETER PageSize
-    Specific page number to get. 0 based index.
+    Limits the number of search results per page. Defaults to 500.
 
     .NOTES
+    Console: Devices > Lifecycle: Registration
+    .EXAMPLE
     #>
 }
