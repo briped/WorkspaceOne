@@ -7,10 +7,8 @@ function Add-DeviceTag {
         ,
         [Parameter(Mandatory = $true)]
         [string]
-        $tagUUID
+        $TagUUID
     )
-    Write-Error -Message "This function is not completed yet." -ErrorAction Stop
-
     $Uri = "$($Config.ApiUrl)/mdm/devices/${DeviceUUID}/tags/${TagUUID}"
 
     $Attributes = @{
@@ -23,10 +21,20 @@ function Add-DeviceTag {
 
     <#
     .SYNOPSIS
+    Associates tag with a device
 
     .DESCRIPTION
+    Associates a tag with the device specified by the device UUID.
+
+    .PARAMETER DeviceUUID
+    Identifier for a device.
+
+    .PARAMETER TagUUID
+    Identifier for a tag.
+
+    .EXAMPLE
+    Add-DeviceTag -DeviceUUID 12345678-90ab-cdef-abcd-ef0987654321 -TagUUID abcdef12-3456-7890-1234-567890abcdef
 
     .NOTES
-
     #>
 }
