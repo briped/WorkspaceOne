@@ -8,17 +8,10 @@ function Export-ApiConfig {
         $Path
     )
     $OSEnv = Get-OSEnvironment
-    if (!$Path -or !(Test-Path -Path $Path -PathType Leaf -ErrorAction SilentlyContinue)) {
-        Add-Type -AssemblyName System.Windows.Forms
-        $FileBrowser = New-Object -TypeName System.Windows.Forms.SaveFileDialog
-        $FileBrowser.InitialDirectory = $OSEnv.Home
-        $FileBrowser.FileName = ".ws1config_$($OSEnv.UserHost).xml"
-        $FileBrowser.Filter = 'Common Language Infrastructure eXensible Markup Language (*.xml)|*.xml|All files (*.*)|*.*'
-        $DialogResult = $FileBrowser.ShowDialog()
-        if ($DialogResult -ne 'OK') { return }
-        $Path = [System.IO.FileInfo]$FileBrowser.FileName
-    }
-    $Script:Config | Export-Clixml -Path $Path.FullName
+
+    #if (!$Path -or !(Test-Path -Path $Path -PathType Leaf -ErrorAction SilentlyContinue)) {
+    if (!$Path) { $Path = [System.IO.FileInfo](Join-Path -Path $OSEnv.Home -ChildPath ".ws1config_$($OSEnv.UserHost).xml") }
+    $Script:Config | Export-Clixml -Path $Path
     <#
     .SYNOPSIS
     Export API configuration.
@@ -29,8 +22,11 @@ function Export-ApiConfig {
     .PARAMETER Path
     The filepath to the CliXML file containing the configuration.
 
-    .NOTES
-    .LINK
     .EXAMPLE
+    .NOTES
+        .TODO
+        .CHANGES
+        2026-02-13
+        * Updated to store certificate with private key.
     #>
 }

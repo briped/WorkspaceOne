@@ -13,15 +13,10 @@ function Import-ApiConfig {
     )
     $OSEnv = Get-OSEnvironment
     if (!$Path -or !(Test-Path -Path $Path -PathType Leaf -ErrorAction SilentlyContinue)) {
-        Add-Type -AssemblyName System.Windows.Forms
-        $FileBrowser = New-Object -TypeName System.Windows.Forms.OpenFileDialog
-        $FileBrowser.InitialDirectory = $OSEnv.Host
-        $FileBrowser.FileName = ".ws1config_$($OSEnv.UserHost).xml"
-        $FileBrowser.Filter = 'Common Language Infrastructure eXensible Markup Language (*.xml)|*.xml|All files (*.*)|*.*'
-        $FileBrowser.ShowDialog() | Out-Null
-        $Path = [System.IO.FileInfo]$FileBrowser.FileName
+        $Path = [System.IO.FileInfo](Join-Path -Path $OSEnv.Home -ChildPath ".ws1config_$($OSEnv.UserHost).xml")
     }
-    $Script:Config = Import-Clixml -Path $Path.FullName
+    $Script:Config = Import-Clixml -Path $Path
+
     if ($PassThru) { $Script:Config }
     <#
     .SYNOPSIS
@@ -36,7 +31,11 @@ function Import-ApiConfig {
     .PARAMETER PassThru
     Returns the imported configuration.
 
-    .NOTES
     .EXAMPLE
+    .NOTES
+        .TODO
+        .CHANGES
+        2026-02-13
+        * Updated to store certificate with private key.
     #>
 }

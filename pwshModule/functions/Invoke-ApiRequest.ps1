@@ -33,33 +33,41 @@ function Invoke-ApiRequest {
     if (!$Script:Config) {
         Write-Error 'Missing configuration' -ErrorAction Stop
     }
-    switch ($Script:Config.AuthenticationMethod) {
-        'Basic' {
-            $Authributes = @{
-                Credential = $Script:Config.Credential
-            }
-            break
-        }
-        'Certificate' {
-            $Authributes = @{
-                Uri = $Uri
-                Certificate = $Script:Config.Certificate
-            }
-            break
-        }
-        'OAuth' {
-            $Authributes = @{
-                OAuthUrl = $Script:Config.OAuthUrl
-                OAuthCredential = $Script:Config.OAuthCredential
-            }
-            break
-        }
-        Default {
-            Write-Error -Message "Unknown authentication method: $($Script:Config.AuthenticationMethod)"
+    if ($Script:Config.Credential) {
+        $Attributes = @{
+            Credential = $Script:Config.Credential
         }
     }
-    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Get-Authorization $($Authributes | ConvertTo-Json -Compress -Depth 5)"
-    $Authorization = Get-Authorization @Authributes
+    elseif ($Script:Config.Certificate) {
+        if (!$Script:Config.Certificate.PSPath -or !(Test-Path -PathType Leaf -Path $Script:Config.Certificate.PSPath)) {
+            Write-Error -Message "Stored certificate path `"$($Script:Config.Certificate.PSPath)`" does not exist." -ErrorAction Stop
+        }
+        $PathInfo = Resolve-Path -Path $Script:Config.Certificate.PSPath
+        switch ($PathInfo.Provider.Name) {
+            'Certificate' {
+                $Certificate = Get-Item -Path $Script:Config.Certificate.PSPath
+            }
+            'FileSystem' {
+                $CertificatePath = Convert-Path -Path $Script:Config.Certificate.PSPath
+                $Certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($CertificatePath, $Script:Config.Certificate.Password)
+            }
+        }
+        $Attributes = @{
+            Uri = $Uri
+            Certificate = $Certificate
+        }
+    }
+    elseif ($Script:Config.OAuthCredential) {
+        $Attributes = @{
+            OAuthUrl = $Script:Config.OAuthUrl
+            OAuthCredential = $Script:Config.OAuthCredential
+        }
+    }
+    else {
+        Write-Error -Message "Could not determine authentication method." -ErrorAction Stop
+    }
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Get-Authorization $($Attributes | ConvertTo-Json -Compress -Depth 5)"
+    $Authorization = Get-Authorization @Attributes
 
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Script:Config.ApiKey)
     $ApiKey = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
@@ -103,7 +111,12 @@ function Invoke-ApiRequest {
     The content type to use. 
     Default: application/json
 
-    .NOTES
     .EXAMPLE
+
+    .NOTES
+        .TODO
+        .CHANGES
+        2026-02-13
+        * Updated to support new authentication logic from New-ApiConfig
     #>
 }
