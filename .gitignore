@@ -5,6 +5,7 @@
 Thumbs.db
 
 # ignore logs
+logs/
 *.log
 
 # ignore all dotfiles
