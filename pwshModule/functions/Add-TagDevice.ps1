@@ -1,5 +1,6 @@
 function Add-TagDevice {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true
+                ,  ConfirmImpact = 'High')]
     param(
         [Parameter(Mandatory = $true)]
         [int]
@@ -8,8 +9,15 @@ function Add-TagDevice {
         [Parameter(Mandatory = $true)]
         [int[]]
         $DeviceId
+        ,
+        [Parameter()]
+        [switch]
+        $Force
     )
     $Uri = "$($Config.ApiUrl)/mdm/tags/${Id}/adddevices"
+    if ($Force -and !$Confirm) {
+        $ConfirmPreference = 'None'
+    }
 
     $Payload = @{
         BulkValues = @{
@@ -22,8 +30,10 @@ function Add-TagDevice {
         Version = 1
         Body = $Payload | ConvertTo-Json -Compress
     }
-    Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
-    Invoke-ApiRequest @Attributes
+    if ($PSCmdlet.ShouldProcess("Add $($DeviceId.Count) devices to TagId ${Id}", 'Add-TagDevice', $Id)) {
+        Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
+        #Invoke-ApiRequest @Attributes
+    }
 
     <#
     .SYNOPSIS
@@ -38,7 +48,13 @@ function Add-TagDevice {
     .PARAMETER DeviceId
     Identifier(s) for device(s).
 
-    .NOTES
+    .PARAMETER Force
+    Override confirmation prompts
 
+    .NOTES
+        .TODO
+        .CHANGES
+        2026-02-13
+        + Added SupportsShouldProcess logic.
     #>
 }

@@ -5,8 +5,15 @@ function Remove-Tag {
         [Parameter(Mandatory = $true)]
         [int]
         $Id
+        ,
+        [Parameter()]
+        [switch]
+        $Force
     )
     $Uri = "$($Config.ApiUrl)/mdm/tags/$($Id)"
+    if ($Force -and !$Confirm) {
+        $ConfirmPreference = 'None'
+    }
 
     $Attributes = @{
         Uri = $Uri
@@ -30,6 +37,14 @@ function Remove-Tag {
 
     .EXAMPLE
     Remove-Tag -Id 123
+
+    .PARAMETER Force
+    Override confirmation prompts
+
     .NOTES
+        .TODO
+        .CHANGES
+        2026-02-13
+        + Force parameter
     #>
 }

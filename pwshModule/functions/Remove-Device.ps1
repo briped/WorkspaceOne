@@ -5,7 +5,14 @@ function Remove-Device {
         [Parameter(Mandatory = $true)]
         [int]
         $Id
+        ,
+        [Parameter()]
+        [switch]
+        $Force
     )
+    if ($Force -and !$Confirm) {
+        $ConfirmPreference = 'None'
+    }
     $Attributes = @{
         Uri = "$($Config.ApiUrl)/mdm/devices/$($Id)"
         Method = 'DELETE'
@@ -24,7 +31,15 @@ function Remove-Device {
     .PARAMETER Id
     The Device ID.
 
-    .NOTES
+    .PARAMETER Force
+    Override confirmation prompts
+
     .EXAMPLE
+
+    .NOTES
+        .TODO
+        .CHANGES
+        2026-02-13
+        + Force parameter
     #>
 }
