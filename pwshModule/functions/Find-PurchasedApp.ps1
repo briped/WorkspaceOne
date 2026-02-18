@@ -72,8 +72,7 @@ function Find-PurchasedApp {
         Version = 1
     }
     Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
-    $Response = Invoke-ApiRequest @Attributes
-    $Response.Application
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Search and retrieve details for purchased applications.
@@ -114,7 +113,10 @@ function Find-PurchasedApp {
     .PARAMETER OrderBy
     Orderby column name, for example - applicationname.
 
-    .NOTES
     .EXAMPLE
+    .NOTES
+        .CHANGES
+        2026-02-18
+        * Change return to return full response instead of only the list of items.
     #>
 }

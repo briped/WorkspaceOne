@@ -63,8 +63,7 @@ function Find-SmartGroup {
         Version = 1
     }
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress)"
-    $Response = Invoke-ApiRequest @Attributes
-    $Response.SmartGroups
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Searches for smart groups using the query information provided.
@@ -104,7 +103,10 @@ function Find-SmartGroup {
     .PARAMETER SortOrder
     Sorting order. Values ASC or DESC. Defaults to ASC.
 
-    .LINK
     .EXAMPLE
+    .NOTES
+        .CHANGES
+        2026-02-18
+        * Change return to return full response instead of only the list of items.
     #>
 }

@@ -54,8 +54,7 @@ function Find-OrganizationGroup {
         Version = 2
     }
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress -Depth 5)"
-    $Response = Invoke-ApiRequest @Attributes
-    $Response.OrganizationGroups
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Searches for organization groups using the query information provided.
@@ -85,6 +84,8 @@ function Find-OrganizationGroup {
     Sorting order. Allowed values are ASC or DESC. Defaults to ASC if this attribute is not specified.
 
     .NOTES
-    .EXAMPLE
+        .CHANGES
+        2026-02-18
+        * Change return to return full response instead of only the list of items.
     #>
 }

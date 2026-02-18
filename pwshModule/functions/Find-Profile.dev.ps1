@@ -29,8 +29,7 @@ function Find-Profile {
         Body = '{}'
     }
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress)"
-    $Response = Invoke-ApiRequest @Attributes
-    $Response
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
 

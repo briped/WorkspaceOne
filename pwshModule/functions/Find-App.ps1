@@ -109,8 +109,7 @@ function Find-App {
         Version = 1
     }
     Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
-    $Response = Invoke-ApiRequest @Attributes
-    $Response.Application
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Search and retrieve details for both internal and external applications or books
@@ -172,8 +171,9 @@ function Find-App {
     .PARAMETER OrderBy
     Orderby column name.
 
-    .NOTES
-    .LINK
-    .EXAMPLE
-    #>
+     .NOTES
+        .CHANGES
+        2026-02-18
+        * Change return to return full response instead of only the list of items.
+   #>
 }

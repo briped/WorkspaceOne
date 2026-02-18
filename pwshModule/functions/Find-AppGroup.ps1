@@ -53,8 +53,7 @@ function Find-AppGroup {
         Version = 1
     }
     Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
-    $Response = Invoke-ApiRequest @Splattributes
-    $Response.AppGroups
+    Invoke-ApiRequest @Splattributes
     <#
     .SYNOPSIS
     Searches for the Application Groups based on the query information provided.
@@ -84,7 +83,8 @@ function Find-AppGroup {
     Orderby column name. Example = "ApplicationCount".
 
     .NOTES
-    .LINK
-    .EXAMPLE
+        .CHANGES
+        2026-02-18
+        * Change return to return full response instead of only the list of items.
     #>
 }

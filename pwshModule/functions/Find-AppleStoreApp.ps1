@@ -13,7 +13,7 @@ function Find-AppleStoreApp {
         Version = 1
     }
     Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
-    Invoke-ApiRequest @Splattributes
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Searches in App stores for the applications with the specified search string and returns the details.
@@ -25,7 +25,8 @@ function Find-AppleStoreApp {
     Application name to be searched. Example: Boxer. (Required).
 
     .NOTES
-    .LINK
-    .EXAMPLE
+        .CHANGES
+        2026-02-18
+        * Fixed incorrect variable
     #>
 }

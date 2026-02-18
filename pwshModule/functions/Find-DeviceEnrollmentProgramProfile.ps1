@@ -56,8 +56,7 @@ function Find-DeviceEnrollmentProgramProfile {
     }
     if ($Query.Count -gt 0) { $Attributes.Uri = "$($Uri)?$($Query -join '&')" }
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress)"
-    $Response = Invoke-ApiRequest @Attributes
-    $Response.ProfileList
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Returns a collection of Automated Device Enrollment profiles based on the search criteria.
@@ -84,5 +83,8 @@ function Find-DeviceEnrollmentProgramProfile {
     Sort order of results. One of ASC or DESC. Defaults to ASC.
 
     .NOTES
+        .CHANGES
+        2026-02-18
+        * Change return to return full response instead of only the list of items.
     #>
 }

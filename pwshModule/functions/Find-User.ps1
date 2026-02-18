@@ -103,13 +103,7 @@ function Find-User {
         Version = $Version
     }
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Invoke-ApiRequest $($Attributes | ConvertTo-Json -Compress)"
-    $Response = Invoke-ApiRequest @Attributes
-    #if ($Version -eq 1) {
-    #    $Response.Users
-    #}
-    #else {
-        $Response
-    #}
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Search of the enrollment users.

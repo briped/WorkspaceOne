@@ -58,8 +58,7 @@ function Find-UserGroup {
         Version = 1
     }
     Write-Verbose -Message ($Attributes | ConvertTo-Json -Compress)
-    $Response = Invoke-ApiRequest @Attributes
-    $Response.ResultSet
+    Invoke-ApiRequest @Attributes
     <#
     .SYNOPSIS
     Search User Groups.
@@ -92,7 +91,8 @@ function Find-UserGroup {
     Orderby column name. Example = "ApplicationCount".
 
     .NOTES
-    .LINK
-    .EXAMPLE
+        .CHANGES
+        2026-02-18
+        * Change return to return full response instead of only the list items.
     #>
 }
