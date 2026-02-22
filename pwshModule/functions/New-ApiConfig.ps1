@@ -1,38 +1,43 @@
 function New-ApiConfig {
     [CmdletBinding(DefaultParameterSetName = 'Basic')]
     param(
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('ApiUri')]
         [ValidateNotNullOrEmpty()]
         [uri]
         $Uri
         ,
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('ApiKey')]
         [ValidateNotNullOrEmpty()]
         [Security.SecureString]
         $Key
         ,
-        [Parameter(ParameterSetName = 'Basic')]
+        [Parameter(ParameterSetName = 'Basic'
+                ,  ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [pscredential]
         $Credential
         ,
-        [Parameter(ParameterSetName = 'Certificate')]
+        [Parameter(ParameterSetName = 'Certificate'
+                ,  ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Object]
         $Certificate
         ,
-        [Parameter(ParameterSetName = 'Certificate')]
+        [Parameter(ParameterSetName = 'Certificate'
+                ,  ValueFromPipelineByPropertyName = $true)]
         [Security.SecureString]
         $CertificatePassword
         ,
-        [Parameter(ParameterSetName = 'OAuth')]
+        [Parameter(ParameterSetName = 'OAuth'
+                ,  ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [uri]
         $OAuthUrl = 'https://emea.uemauth.vmwservices.com/connect/token'
         ,
-        [Parameter(ParameterSetName = 'OAuth')]
+        [Parameter(ParameterSetName = 'OAuth'
+                ,  ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [pscredential]
         $OAuthCredential
