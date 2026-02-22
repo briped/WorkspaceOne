@@ -1,11 +1,43 @@
+<#PSScriptInfo
+.VERSION
+2026.02.19.0
+
+.GUID
+b1322417-f0a3-4f5b-802a-e3aca56986b8
+
+.AUTHOR
+Brian Schmidt Pedersen
+
+.COMPANYNAME
+N/A
+
+.COPYRIGHT
+(c) Brian Schmidt Pedersen. All rights reserved.
+
+.LICENSEURI
+https://raw.githubusercontent.com/briped/WorkSpaceOne/main/LICENSE
+
+.PROJECTURI
+https://github.com/briped/WorkspaceOne
+
+.RELEASENOTES
+2026.02.19.0
++ Initial version
+#>
 <#
 .SYNOPSIS
+Find devices that are inactive based on specified criteria.
 
 .DESCRIPTION
+Finds all devices that matches the specified criteria for being inactive.
+Organization Groups or App Bundle-ids can be used to exclude a device from being considered inactive.
+
+The idea of the script is to do inactive device cleanup.
 
 .NOTES
-
+TODO
 .EXAMPLE
+TODO
 #>
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
