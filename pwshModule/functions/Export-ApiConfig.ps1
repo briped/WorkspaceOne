@@ -7,10 +7,10 @@ function Export-ApiConfig {
         [System.IO.FileInfo]
         $Path
     )
-    $OSEnv = Get-OSEnvironment
-
-    #if (!$Path -or !(Test-Path -Path $Path -PathType Leaf -ErrorAction SilentlyContinue)) {
-    if (!$Path) { $Path = [System.IO.FileInfo](Join-Path -Path $OSEnv.Home -ChildPath ".ws1config_$($OSEnv.UserHost).xml") }
+    if (!$Path) {
+        $EnvHome = if ($IsWindows) { [System.Environment]::GetEnvironmentVariable('USERPROFILE') } else { [System.Environment]::GetEnvironmentVariable('HOME') }
+        $Path = [System.IO.FileInfo](Join-Path -Path $EnvHome -ChildPath ".ws1config.xml")
+    }
     $Script:Config | Export-Clixml -Path $Path
     <#
     .SYNOPSIS
@@ -21,12 +21,5 @@ function Export-ApiConfig {
 
     .PARAMETER Path
     The filepath to the CliXML file containing the configuration.
-
-    .EXAMPLE
-    .NOTES
-        .TODO
-        .CHANGES
-        2026-02-13
-        * Updated to store certificate with private key.
     #>
 }

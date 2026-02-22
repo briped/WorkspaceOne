@@ -11,12 +11,16 @@ function Import-ApiConfig {
         [switch]
         $PassThru
     )
-    $OSEnv = Get-OSEnvironment
-    if (!$Path -or !(Test-Path -Path $Path -PathType Leaf -ErrorAction SilentlyContinue)) {
-        $Path = [System.IO.FileInfo](Join-Path -Path $OSEnv.Home -ChildPath ".ws1config_$($OSEnv.UserHost).xml")
+    if (!$Path) {
+        Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Import-ApiConfig: `$Path is not set."
+        $EnvHome = if ($IsWindows) { [System.Environment]::GetEnvironmentVariable('USERPROFILE') } else { [System.Environment]::GetEnvironmentVariable('HOME') }
+        $Path = [System.IO.FileInfo](Join-Path -Path $EnvHome -ChildPath ".ws1config.xml")
+        Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Import-ApiConfig: Setting `$Path to: ${Path}"
+    }
+    if (!(Test-Path -PathType Leaf -Path $Path)) {
+        Write-Error -Message "$($MyInvocation.MyCommand.Name): Import-ApiConfig: Path does not exist: ${Path}" -ErrorAction Stop
     }
     $Script:Config = Import-Clixml -Path $Path
-
     if ($PassThru) { $Script:Config }
     <#
     .SYNOPSIS
@@ -34,8 +38,6 @@ function Import-ApiConfig {
     .EXAMPLE
     .NOTES
         .TODO
-        .CHANGES
-        2026-02-13
-        * Updated to store certificate with private key.
+        Check the imported data before registering to module config.
     #>
 }
