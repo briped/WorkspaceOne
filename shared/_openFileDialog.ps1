@@ -11,7 +11,7 @@ function _openFileDialog {
         $EnvHome = [System.Environment]::GetEnvironmentVariable('HOME')
         #TODO: Implement OpenFileDialog equivalent for MacOS desktops
     }
-    elseif ($IsWindows) {
+    else {
     $EnvUser = [System.Environment]::GetEnvironmentVariable('USERNAME')
     $EnvHost = [System.Environment]::GetEnvironmentVariable('COMPUTERNAME')
     $EnvHome = [System.Environment]::GetEnvironmentVariable('USERPROFILE')
@@ -29,8 +29,5 @@ function _openFileDialog {
         else {
             Read-Host -Prompt 'Path'
         }
-    }
-    else {
-        throw "Unkown Operating System"
     }
 }

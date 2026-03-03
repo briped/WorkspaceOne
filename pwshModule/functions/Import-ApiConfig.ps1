@@ -13,7 +13,8 @@ function Import-ApiConfig {
     )
     if (!$Path) {
         Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Import-ApiConfig: `$Path is not set."
-        $EnvHome = if ($IsWindows) { [System.Environment]::GetEnvironmentVariable('USERPROFILE') } else { [System.Environment]::GetEnvironmentVariable('HOME') }
+        $EnvHome = [System.Environment]::GetEnvironmentVariable('USERPROFILE')
+        if ($IsLinux -or $IsMacOS) { $EnvHome = [System.Environment]::GetEnvironmentVariable('HOME') }
         $Path = [System.IO.FileInfo](Join-Path -Path $EnvHome -ChildPath ".ws1config.xml")
         Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Import-ApiConfig: Setting `$Path to: ${Path}"
     }

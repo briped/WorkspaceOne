@@ -45,7 +45,8 @@ $Manifest = [System.IO.FileInfo](Join-Path -Path (Join-Path -Path $ParentDir -Ch
 Import-Module -Force -Name $Manifest
 
 # Simple secure credential storage and checking.
-$EnvHome = if ($IsWindows) { [System.Environment]::GetEnvironmentVariable('USERPROFILE') } else { [System.Environment]::GetEnvironmentVariable('HOME') }
+$EnvHome = [System.Environment]::GetEnvironmentVariable('USERPROFILE')
+if ($IsLinux -or $IsMacOS) { $EnvHome = [System.Environment]::GetEnvironmentVariable('HOME') }
 $ConfigFile = [System.IO.FileInfo](Join-Path -Path $EnvHome -ChildPath ".ws1config.xml")
 if (Test-Path -PathType Leaf -Path $ConfigFile) {
     $ApiConfig = Import-Ws1ApiConfig -PassThru -Path $ConfigFile

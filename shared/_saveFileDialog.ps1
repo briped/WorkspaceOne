@@ -42,7 +42,7 @@ function _saveFileDialog {
         $EnvHome = [System.Environment]::GetEnvironmentVariable('HOME')
         #Invoke-Expression -Command 'osascript -e 'set selectedFolder to choose folder with prompt "Select a Folder"''
     }
-    elseif ($IsWindows) {
+    else {
         $EnvUser = [System.Environment]::GetEnvironmentVariable('USERNAME')
         $EnvHost = [System.Environment]::GetEnvironmentVariable('COMPUTERNAME')
         $EnvHome = [System.Environment]::GetEnvironmentVariable('USERPROFILE')
@@ -57,8 +57,5 @@ function _saveFileDialog {
             if ($DialogResult -ne 'OK') { return }
             [System.IO.FileInfo]$FileBrowser.FileName
         }
-    }
-    else {
-        throw "Unkown Operating System"
     }
 }
