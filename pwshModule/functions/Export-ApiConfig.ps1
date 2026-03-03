@@ -8,8 +8,10 @@ function Export-ApiConfig {
         $Path
     )
     if (!$Path) {
+        Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Export-ApiConfig: `$Path is not set."
         $EnvHome = if ($IsWindows) { [System.Environment]::GetEnvironmentVariable('USERPROFILE') } else { [System.Environment]::GetEnvironmentVariable('HOME') }
         $Path = [System.IO.FileInfo](Join-Path -Path $EnvHome -ChildPath ".ws1config.xml")
+        Write-Verbose -Message "$($MyInvocation.MyCommand.Name): Export-ApiConfig: Setting `$Path to: ${Path}"
     }
     $Script:Config | Export-Clixml -Path $Path
     <#
